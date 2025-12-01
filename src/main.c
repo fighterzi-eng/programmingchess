@@ -51,7 +51,7 @@ char** boardmaker() { //chaneged function type to return a 2d pointer for board
     // place pieces
     for (int i = 0; i < 32; i++) {
         if (!pieces[i].alive) continue;
-        board[pieces[i].posy][pieces[i].posx] = pieces[i].name; //earlier version was reversed rows in place of columns
+        board[pieces[i].posy][pieces[i].posx] = pieces[i].type; //earlier version was reversed rows in place of columns
     }
     return board;
 }
