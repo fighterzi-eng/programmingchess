@@ -1,6 +1,49 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+bool move(int x1,int y1,int x2,int y2)
+{
+   if(move_valid()==0)
+      {
+        printf("invalid move : enter another move");
+        scanf(" %d %d %d %d",&x1, &y1, &x2, &y2);
+        move( x1, y1, x2, y2);
+
+    if(islower(board[x1][y1])){ //white scope
+        if(board[x1][y1]=='p'){}
+         if(board[x1][y1]=='r'){
+            
+         }
+          if(board[x1][y1]=='n'){}
+           if(board[x1][y1]=='b'){}
+            if(board[x1][y1]=='q'){}
+             if(board[x1][y1]=='k'){}
+ }
+
+
+
+
+
+    
+              if(board[x1][y1]==){}
+               if(board[x1][y1]==){}
+                if(board[x1][y1]==){}
+                 if(board[x1][y1]==){}
+   
+    
+        
+        
+        
+
+  
+
+
+
+
+}
 typedef struct{
     char type;
     int posx;
