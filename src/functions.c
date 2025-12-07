@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 
 
@@ -55,11 +56,12 @@ char **board;
 
 
 
-int Rook(int x1,int y1,int x2,int y2){
+int Rook(int x1,int y1,int x2,int y2,char**board){
 
 if(!(x1==x2||y1==y2))
-return 4;
+return 1;
 if(islower(board[y1][x1])==1){ //white rook
+  // we are going to remove this condition and implement it in the global move validator instaead of copying and pating it everywhaere
   if(x1<=8 && x1>=1 &&x2<=8 && x2>=1 &&y1<=8 && y1>=1 &&y2<=8 && y2>=1){
     int x3 =x2-x1;
     if(x3==0){
@@ -165,13 +167,67 @@ if(isupper(board[y1][x1])==1){ //black rock
   }}}}
  return 0;
 }
+int bishop(int x1,int y1,int x2,int y2,char**board){
 
+  if (!(abs(x1-x2)==abs(y1-y2))) return 1;
+  if ((x2-x1)>=0 && (y2-y1)>=0){
+    int o1=x1,o2=y1;
+    while(o1<x2 && o2<y2){
+      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      o2++;
+      o1++;}
+    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    else{
+      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      else return 0;}
+  }
+  else if ((x2-x1)<0 && (y2-y1)<0){int o1=x1,o2=y1;
+    while(o1>x2 && o2>y2){
+      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      o2--;
+      o1--;
+    }
+    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    else{
+      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      else return 0;
+    }}
+  else if ((x2-x1)<0 && (y2-y1)>0){
+    int o1=x1,o2=y1;
+    while(o1>x2 && o2<y2){
+      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      o2++;
+      o1--;
+    }
+    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    else{
+      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      else return 0;
+    }
+  }
+  else if ((x2-x1)>0 && (y2-y1)<0){
+    int o1=x1,o2=y1;
+    while(o1<x2 && o2>y2){
+      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      o2--;
+      o1++;
+    }
+    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    else{
+      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      else return 0;
+    }
+  }
+  
+
+
+}
 
 int main(){
 
 board=boardmaker();
 
-printf(" %d", Rook(1,2,4,5));
+printf(" %d", Rook(1,2,4,5,board));
 
 
 return 0;
