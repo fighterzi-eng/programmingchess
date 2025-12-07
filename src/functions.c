@@ -50,7 +50,15 @@ char** boardmaker() { //chaneged function type to return a 2d pointer for board
 } 
 char **board;
 int knight(int x1,int y1,int x2,int y2,char**board){
-  int offsets[8][2]={{2,1},{2,-1},{},{},{},{},{},{}}
+  if ((abs(x1-x2)==1&&abs(y1-y2)==2)||(abs(x1-x2)==2&&abs(y1-y2)==1)){
+    if (board[x2][y2]=='.'||board[x2][y2]=='-') return 0;
+    else{
+      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      else return 0;
+
+    }
+  }
+
 
 }
 
@@ -230,7 +238,7 @@ int main(){
 
 board=boardmaker();
 
-printf(" %d", Rook(1,2,4,5,board));
+printf("%d", Rook(1,2,4,5,board));
 
 
 return 0;
