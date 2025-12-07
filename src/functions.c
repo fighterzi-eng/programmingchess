@@ -49,7 +49,18 @@ char** boardmaker() { //chaneged function type to return a 2d pointer for board
     return board;
 } 
 char **board;
+int knight(int x1,int y1,int x2,int y2,char**board){
+  if ((abs(x1-x2)==1&&abs(y1-y2)==2)||(abs(x1-x2)==2&&abs(y1-y2)==1)){
+    if (board[x2][y2]=='.'||board[x2][y2]=='-') return 0;
+    else{
+      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      else return 0;
 
+    }
+  }
+
+
+}
 
 
 
@@ -58,8 +69,42 @@ char **board;
 
 int Rook(int x1,int y1,int x2,int y2,char**board){
 
-if(!(x1==x2||y1==y2))
-return 1;
+if(!(x1==x2||y1==y2))return 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if(islower(board[y1][x1])==1){ //white rook
   // we are going to remove this condition and implement it in the global move validator instaead of copying and pating it everywhaere
   if(x1<=8 && x1>=1 &&x2<=8 && x2>=1 &&y1<=8 && y1>=1 &&y2<=8 && y2>=1){
@@ -227,7 +272,7 @@ int main(){
 
 board=boardmaker();
 
-printf(" %d", Rook(1,2,4,5,board));
+printf("%d", Rook(1,2,4,5,board));
 
 
 return 0;
