@@ -4,7 +4,87 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+char **board;
+char promote(){
+  char ch;
+  scanf("%c",&ch);
+  switch (ch)
+  {
+  case 'r':
+    return ch;
+    break;
+  case 'n':
+    return ch;
+    break;
+  case 'b':
+    return ch;
+    break;
+  case 'q':
+    return ch;
+    break;
+  
+  
+  default:
+  printf("invalid enter again");
+  return promote();
+    break;
+  }
+}
 
+
+int pawn(int x1,int y1,int x2,int y2,char**board){
+  int direction = (isupper(board[y1][x1])==0) ? 1 : -1;
+
+    if (x1 == x2 && y2 == y1 + direction && (board[y2][x2]=='-'||board[y2][x2]=='.'))
+        return 0;
+    if (abs(x2-x1)==1 && y2 == y1 + direction && isupper(board[y1][x1])!=isupper(board[y2][x2]))
+        return 0;
+
+    if (x1 == x2 &&
+        y2 == y1 + 2 * direction) {
+
+        if (isupper(board[y1][x1])==0 && y1 == 2&& (board[y2][x2]=='-'||board[y2][x2]=='.'))  
+            return 0;
+
+        if (isupper(board[y1][x1])!=0 && y1 == 7&& (board[y2][x2]=='-'||board[y2][x2]=='.'))  
+            return 0;
+    }
+
+    return 1;
+}
+//this function is the exception to a rule ,it can move pieces
+int pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
+  if(pawn(x1,y1,x2,y2,board)==0){
+    if (isupper(board[y1][x1])==0){
+      if(y2==8){
+        board[y2][x2]=promote();
+        board[x1][y1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+
+      }
+      else{
+        board[y2][x2]=board[x1][y1];
+        board[x1][y1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+
+      }
+    }
+    else{
+      if(y2==1){
+        board[y2][x2]=capitalize(promote());
+        board[x1][y1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+
+      }
+      else{
+        board[y2][x2]=board[x1][y1];
+        board[x1][y1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+
+      }
+
+    }
+
+
+  }
+
+}
 
 
 
@@ -48,7 +128,7 @@ char** boardmaker() { //chaneged function type to return a 2d pointer for board
    
     return board;
 } 
-char **board;
+
 int knight(int x1,int y1,int x2,int y2,char**board){
   if ((abs(x1-x2)==1&&abs(y1-y2)==2)||(abs(x1-x2)==2&&abs(y1-y2)==1)){
     if (board[y2][x2]=='.'||board[y2][x2]=='-') return 0;
@@ -62,47 +142,9 @@ int knight(int x1,int y1,int x2,int y2,char**board){
 
 }
 
-
-
-
-
-
 int Rook(int x1,int y1,int x2,int y2,char**board){
 
 if(!(x1==x2||y1==y2))return 1;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if(islower(board[y1][x1])==1){ //white rook
@@ -212,6 +254,7 @@ if(isupper(board[y1][x1])==1){ //black rock
   }}}}
  return 0;
 }
+
 int bishop(int x1,int y1,int x2,int y2,char**board){
 
   if (!(abs(x1-x2)==abs(y1-y2))) return 1;
