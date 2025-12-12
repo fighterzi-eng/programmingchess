@@ -1,3 +1,4 @@
+//we need to split this file into multiple files because its too large about 400 lines
 #include <ctype.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -5,6 +6,56 @@
 #include <string.h>
 #include <math.h>
 char **board;
+char dead[30];
+//not defined yet only a declared prototype
+int king(int x1,int y1,int x2,int y2,char**board);
+//the excution of this function will be base on the output of the mov e validator if it returned 1 aka false
+//the while loop will continue without incrementing the turn 
+void move(int x1,int y1,int x2,int y2,char**board,char*dead){
+  static int deadn=0;
+  if (!(board[y1][x1]=='-'||board[y1][x1]=='.')){
+    dead[deadn]=board[y2][x2];
+    deadn++;
+
+  }
+  board[y2][x2]=board[x1][y1];
+  board[x1][y1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+
+
+}
+//the base for the move validator(prototype)
+int movevalidator(int x1,int y1,int x2,int y2,char**board){
+  char piece=board[y1][x1];
+  piece=toupper(piece);
+  switch (piece)
+  {
+  case 'K':
+    return king(x1,y1,x2,y2,board);
+   
+    break;
+  case 'P':
+    return pawn(x1,y1,x2,y2,board);
+    break;
+  case 'R':
+    return rook(x1,y1,x2,y2,board);
+    break;
+  case 'N':
+    return knight(x1,y1,x2,y2,board);
+    break;
+  case 'B':
+    return bishop(x1,y1,x2,y2,board);
+    break;
+  case 'Q':
+    if(bishop(x1,y1,x2,y2,board)==0||rook(x1,y1,x2,y2,board)==0) return 0;
+    else return 1;
+    break;
+  
+  default:
+    printf("invalid move");
+    return 1;
+    break;
+  }
+}
 char promote(){
   char ch;
   scanf("%c",&ch);
@@ -69,7 +120,7 @@ int pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
     }
     else{
       if(y2==1){
-        board[y2][x2]=capitalize(promote());
+        board[y2][x2]=toupper(promote());
         board[x1][y1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
 
       }
