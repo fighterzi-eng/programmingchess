@@ -51,9 +51,9 @@ char** boardmaker() { //chaneged function type to return a 2d pointer for board
 char **board;
 int knight(int x1,int y1,int x2,int y2,char**board){
   if ((abs(x1-x2)==1&&abs(y1-y2)==2)||(abs(x1-x2)==2&&abs(y1-y2)==1)){
-    if (board[x2][y2]=='.'||board[x2][y2]=='-') return 0;
+    if (board[y2][x2]=='.'||board[y2][x2]=='-') return 0;
     else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
       else return 0;
 
     }
@@ -218,48 +218,48 @@ int bishop(int x1,int y1,int x2,int y2,char**board){
   if ((x2-x1)>=0 && (y2-y1)>=0){
     int o1=x1,o2=y1;
     while(o1<x2 && o2<y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
       o2++;
       o1++;}
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
     else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
       else return 0;}
   }
   else if ((x2-x1)<0 && (y2-y1)<0){int o1=x1,o2=y1;
     while(o1>x2 && o2>y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
       o2--;
       o1--;
     }
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
     else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
       else return 0;
     }}
   else if ((x2-x1)<0 && (y2-y1)>0){
     int o1=x1,o2=y1;
     while(o1>x2 && o2<y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
       o2++;
       o1--;
     }
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
     else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
       else return 0;
     }
   }
   else if ((x2-x1)>0 && (y2-y1)<0){
     int o1=x1,o2=y1;
     while(o1<x2 && o2>y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
+      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
       o2--;
       o1++;
     }
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
+    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
     else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
+      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
       else return 0;
     }
   }
