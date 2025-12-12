@@ -5,6 +5,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+//this is a basic way of checking danger and it will work but its not efficent
+//i can make it more efficent if i can track each piece
+//return 1 if danger,0 if safe
+int checkdanger(int x,int y,char**board){
+  for(int i=1;i<9;i++){
+    for(int j=1;j<9;j++){
+      if((board[i][j]=='-'||board[i][j]=='.')) continue;
+      if(isupper(board[y][x])==isupper(board[i][j])) continue;
+      if (movevalidator(i,j,x,y,board)==0) return 1;
+    }
+
+  }
+  return 0;
+}
 char **board;
 char dead[30];
 //not defined yet only a declared prototype
