@@ -4,10 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+// Quality of life
+#define EMPTY(c) ((c) == '.' || (c) == '-')   // just a suggestion not yet implemented but using #define could save us space
+#define WHITE(c) islower(c)
+#define BLACK(c) isupper(c)
 
-
-
-
+//---------------------------------------------------------------------------------------------------------------
+//     Board Maker Section
+//---------------------------------------------------------------------------------------------------------------
 
 char** boardmaker() { //chaneged function type to return a 2d pointer for board
     // mallocated the bord inside the board functiona also increased its size for row numbers and coloumns letters from 8x8 -> 10x10
@@ -58,215 +62,58 @@ int knight(int x1,int y1,int x2,int y2,char**board){
 
     }
   }
-
-
-}
-
-
-
-
-
-
-int Rook(int x1,int y1,int x2,int y2,char**board){
-
-if(!(x1==x2||y1==y2))return 1;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if(islower(board[y1][x1])==1){ //white rook
-  // we are going to remove this condition and implement it in the global move validator instaead of copying and pating it everywhaere
-  if(x1<=8 && x1>=1 &&x2<=8 && x2>=1 &&y1<=8 && y1>=1 &&y2<=8 && y2>=1){
-    int x3 =x2-x1;
-    if(x3==0){
-        int y3=y2-y1;
-     if(y3>0){
-      for(int i=y1;i<y2;i++)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-    if(x3>0){
-      for(int i=y1;i<y2;i++)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-}
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-      if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-  }
-    }  
-   if(x3>0){
-      for(int i=x1;i<x2;i++)
-      if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
+ else return 1; //forgot to return 1 if move invalid
 
 }
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-  
-  }}}}
-if(isupper(board[y1][x1])==1){ //black rock
-  if(x1<=8 && x1>=1 &&x2<=8 && x2>=1 &&y1<=8 && y1>=1 &&y2<=8 && y2>=1){
-    int x3 =x2-x1;
-      if(x3==0){
-        int y3=y2-y1;
-     if(y3>0){
-      for(int i=y1;i<y2;i++)
-     if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
-    if(x3>0){
-      for(int i=y1;i<y2;i++)
-     if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
 
-}
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-     if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
-  
-  }
-    }  
-   if(x3>0){
-      for(int i=x1;i<x2;i++)
-      if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
-}
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2])==1)
-      return 1;
-     if(islower(board[y2][x2])==1)
-      return 0;
-  }}}}
- return 0;
-}
-int bishop(int x1,int y1,int x2,int y2,char**board){
 
-  if (!(abs(x1-x2)==abs(y1-y2))) return 1;
-  if ((x2-x1)>=0 && (y2-y1)>=0){
-    int o1=x1,o2=y1;
-    while(o1<x2 && o2<y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
-      o2++;
-      o1++;}
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
-    else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
-      else return 0;}
-  }
-  else if ((x2-x1)<0 && (y2-y1)<0){int o1=x1,o2=y1;
-    while(o1>x2 && o2>y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
-      o2--;
-      o1--;
+//---------------------------------------------------------------------------------------------------------------
+//      Piece Movement Logic Section
+//---------------------------------------------------------------------------------------------------------------
+
+
+int Rook(int x1, int y1, int x2, int y2, char **board) //Better and optimized Rook Validatator
+{
+    if (x1 != x2 && y1 != y2)
+        return 1; // invalid
+
+    char src = board[y1][x1]; //better standard than using board location everywhere
+    char dst = board[y2][x2];
+
+    int dx = (x2 > x1) - (x2 < x1);
+    int dy = (y2 > y1) - (y2 < y1); //determines direction in boolean 1 up , right and -1 down,left
+
+    int x = x1 + dx;
+    int y = y1 + dy;
+
+    while (x != x2 || y != y2) {
+        if (!(board[y][x] == '.' || board[y][x] == '-'))
+            return 1; // invalid
+        x += dx;
+        y += dy;
     }
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
-    else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
-      else return 0;
-    }}
-  else if ((x2-x1)<0 && (y2-y1)>0){
-    int o1=x1,o2=y1;
-    while(o1>x2 && o2<y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
-      o2++;
-      o1--;
-    }
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
-    else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
-      else return 0;
-    }
-  }
-  else if ((x2-x1)>0 && (y2-y1)<0){
-    int o1=x1,o2=y1;
-    while(o1<x2 && o2>y2){
-      if (board[o1][o2]!='.'||board[o1][o2]!='-') return 1;
-      o2--;
-      o1++;
-    }
-    if (board[x2][y2]!='.'||board[x2][y2]!='-') return 0;
-    else{
-      if(isupper(board[x1][y1])==isupper(board[x2][y2])) return 1;
-      else return 0;
-    }
-  }
+
+    if (dst == '.' || dst == '-') //checks boundries
+        return 0; // valid
+
+    if (islower(src) && isupper(dst))
+        return 0; // valid capture
+
+    if (isupper(src) && islower(dst))
+        return 0; // valid capture
+
+    return 1; // invalid (own piece)
+}
+
+
+
+
+
+
   
 
 
-}
+
 
 int main(){
 
