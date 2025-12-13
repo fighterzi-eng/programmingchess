@@ -5,39 +5,60 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-//this is a basic way of checking danger and it will work but its not efficent
-//i can make it more efficent if i can track each piece
-//return 1 if danger,0 if safe
-int checkdanger(int x,int y,char**board){
-  for(int i=1;i<9;i++){
-    for(int j=1;j<9;j++){
-      if((board[i][j]=='-'||board[i][j]=='.')) continue;
-      if(isupper(board[y][x])==isupper(board[i][j])) continue;
-      if (movevalidator(i,j,x,y,board)==0) return 1;
-    }
 
-  }
-  return 0;
-}
+// Quality of life
+#define EMPTY(c) ((c) == '.' || (c) == '-')   // just a suggestion not yet implemented but using #define could save us space
+#define WHITE(c) islower(c)
+#define BLACK(c) isupper(c)
+
+//---------------------------------------------------------------------------------------------------------------
+//     Board Maker Section
+//---------------------------------------------------------------------------------------------------------------
+
+char** boardmaker() { //chaneged function type to return a 2d pointer for board
+    // mallocated the board inside the board functiona also increased its size for row numbers and coloumns letters from 8x8 -> 10x10
+    char **board = malloc(10 * sizeof(char*));
+    for (int i = 0; i < 10; i++)
+        board[i] = malloc(10 * sizeof(char));
+
+    // initialize everything to space to avoid random garbage + edge cases ex: board[0][0]
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 10; j++)
+            board[i][j] = ' ';
+
+    // columns labels (a–h)
+    board[0][1] = board[9][1] = 'a';
+    board[0][2] = board[9][2] = 'b';
+    board[0][3] = board[9][3] = 'c';
+    board[0][4] = board[9][4] = 'd';
+    board[0][5] = board[9][5] = 'e';
+    board[0][6] = board[9][6] = 'f';
+    board[0][7] = board[9][7] = 'g';
+    board[0][8] = board[9][8] = 'h';
+
+    // row labels (1–8)
+    board[1][0] = board[1][9] = '8';
+    board[2][0] = board[2][9] = '7';
+    board[3][0] = board[3][9] = '6';
+    board[4][0] = board[4][9] = '5';
+    board[5][0] = board[5][9] = '4';
+    board[6][0] = board[6][9] = '3';
+    board[7][0] = board[7][9] = '2';
+    board[8][0] = board[8][9] = '1';
+
+    // fill board pattern (changed i,j to r,c for clarity)
+    for (int r = 1; r < 9; r++)
+        for (int c = 1; c < 9; c++)
+            board[r][c] = ((r + c) % 2 == 0) ? '-' : '.';
+
+   
+    return board;
+} 
 char **board;
-char dead[30];
-//not defined yet only a declared prototype
-int king(int x1,int y1,int x2,int y2,char**board);
-//the excution of this function will be base on the output of the mov e validator if it returned 1 aka false
-//the while loop will continue without incrementing the turn 
-void move(int x1,int y1,int x2,int y2,char**board,char*dead){
-  static int deadn=0;
-  if (!(board[y1][x1]=='-'||board[y1][x1]=='.')){
-    dead[deadn]=board[y2][x2];
-    deadn++;
+//---------------------------------------------------------------------------------------------------------------
+//      Piece Movement Logic Section
+//---------------------------------------------------------------------------------------------------------------
 
-  }
-  board[y2][x2]=board[x1][y1];
-  board[x1][y1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
-
-
-}
-//the base for the move validator(prototype)
 int movevalidator(int x1,int y1,int x2,int y2,char**board){
   char piece=board[y1][x1];
   piece=toupper(piece);
@@ -72,7 +93,7 @@ int movevalidator(int x1,int y1,int x2,int y2,char**board){
 }
 char promote(){
   char ch;
-  scanf("%c",&ch);
+  scanf(" %c",&ch);
   switch (ch)
   {
   case 'r':
@@ -95,8 +116,6 @@ char promote(){
     break;
   }
 }
-
-
 int pawn(int x1,int y1,int x2,int y2,char**board){
   int direction = (isupper(board[y1][x1])==0) ? 1 : -1;
 
@@ -145,55 +164,159 @@ int pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
       }
 
     }
-
-
   }
-
 }
 
+//this is a basic way of checking danger and it will work but its not efficent
+//i can make it more efficent if i can track each piece
+//return 1 if danger,0 if safe
+/*int checkdanger(int x,int y,char**board){ Danger Checker V1
+  for(int i=1;i<9;i++){
+    for(int j=1;j<9;j++){
+      if((board[i][j]=='-'||board[i][j]=='.')) continue;
+      if(isupper(board[y][x])==isupper(board[i][j])) continue;
+      if (movevalidator(i,j,x,y,board)==0) return 1;
+    }
 
+  }
+  return 0;
+}*/ 
 
+// V2 Uses the earlier #defines for simplicity
 
-char** boardmaker() { //chaneged function type to return a 2d pointer for board
-    // mallocated the bord inside the board functiona also increased its size for row numbers and coloumns letters from 8x8 -> 10x10
-    char **board = malloc(10 * sizeof(char*));
-    for (int i = 0; i < 10; i++)
-        board[i] = malloc(10 * sizeof(char));
+int inside(int x, int y) { //useful
+    return (x >= 0 && x < 8 && y >= 0 && y < 8);
+}
+int inCheck(int kx, int ky, char **board) //1 = Danger , 0 = safe
+{
+    char king = board[ky][kx];
+    int whiteKing = WHITE(king); //determines colour
 
-    // initialize everything to space to avoid random garbage + edge cases ex: board[0][0]
-    for (int i = 0; i < 10; i++)
-        for (int j = 0; j < 10; j++)
-            board[i][j] = ' ';
+  int dxR[4] = {1, -1, 0, 0};
+    int dyR[4] = {0, 0, 1, -1};
 
-    // columns labels (a–h)
-    board[0][1] = board[9][1] = 'a';
-    board[0][2] = board[9][2] = 'b';
-    board[0][3] = board[9][3] = 'c';
-    board[0][4] = board[9][4] = 'd';
-    board[0][5] = board[9][5] = 'e';
-    board[0][6] = board[9][6] = 'f';
-    board[0][7] = board[9][7] = 'g';
-    board[0][8] = board[9][8] = 'h';
+    for (int d = 0; d < 4; d++) {
+        int x = kx + dxR[d];
+        int y = ky + dyR[d];
 
-    // row labels (1–8)
-    board[1][0] = board[1][9] = '8';
-    board[2][0] = board[2][9] = '7';
-    board[3][0] = board[3][9] = '6';
-    board[4][0] = board[4][9] = '5';
-    board[5][0] = board[5][9] = '4';
-    board[6][0] = board[6][9] = '3';
-    board[7][0] = board[7][9] = '2';
-    board[8][0] = board[8][9] = '1';
+        while (inside(x, y)) { //Checks for queen or rook
+            char p = board[y][x];
 
-    // fill board pattern (changed i,j to r,c for clarity)
-    for (int r = 1; r < 9; r++)
-        for (int c = 1; c < 9; c++)
-            board[r][c] = ((r + c) % 2 == 0) ? '-' : '.';
+            if (!EMPTY(p)) {
+                if (whiteKing && BLACK(p) && (p == 'R' || p == 'Q'))
+                    return 1;
+                if (!whiteKing && WHITE(p) && (p == 'r' || p == 'q'))
+                    return 1;
+                break;
+            }
+            x += dxR[d];
+            y += dyR[d];
+        }
+    }
+   int dxB[4] = {1, 1, -1, -1};
+   int dyB[4] = {1, -1, 1, -1};
+ 
+ for (int d = 0; d < 4; d++) {// queen or bishop
+        int x = kx + dxB[d];
+        int y = ky + dyB[d];
 
-   
-    return board;
-} 
+        while (inside(x, y)) {
+            char p = board[y][x];
 
+            if (!EMPTY(p)) {
+                if (whiteKing && BLACK(p) && (p == 'B' || p == 'Q'))
+                    return 1;
+                if (!whiteKing && WHITE(p) && (p == 'b' || p == 'q'))
+                    return 1;
+                break;
+            }
+            x += dxB[d];
+            y += dyB[d];
+        }
+    }
+    int kdx[8] = { 2, 1, -1, -2, -2, -1, 1, 2 };
+    int kdy[8] = { 1, 2,  2,  1, -1, -2,-2,-1 };
+
+    for (int i = 0; i < 8; i++) {//Danger of knight
+        int x = kx + kdx[i];
+        int y = ky + kdy[i];
+
+        if (inside(x, y)) {
+            char p = board[y][x];
+            if (whiteKing && p == 'N') return 1;
+            if (!whiteKing && p == 'n') return 1;
+        }
+    }
+if (whiteKing) {//NEEDS CAREFUL DEBUGGING LATER NOT 100% sure it even works
+        // black pawns attack DOWN
+        int px[2] = {kx - 1, kx + 1};
+        int py = ky + 1;
+
+        for (int i = 0; i < 2; i++)
+            if (inside(px[i], py) && board[py][px[i]] == 'P')
+                return 1;
+    } else {
+        // white pawns attack UP
+        int px[2] = {kx - 1, kx + 1};
+        int py = ky - 1;
+
+        for (int i = 0; i < 2; i++)
+            if (inside(px[i], py) && board[py][px[i]] == 'p')
+                return 1;
+    }
+    //Checks for enemy king 
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) continue;
+
+            int x = kx + dx;
+            int y = ky + dy;
+
+            if (inside(x, y)) {
+                char p = board[y][x];
+                if (whiteKing && p == 'K') return 1;
+                if (!whiteKing && p == 'k') return 1;
+            }
+        }
+    }
+// if every thing ok returns safe
+    return 0;
+}
+
+//Rook
+int rook(int x1, int y1, int x2, int y2, char **board) //Better and optimized Rook Validatator
+{
+    if (x1 != x2 && y1 != y2)
+        return 1; // invalid
+
+    char src = board[y1][x1]; //better standard than using board location everywhere
+    char dst = board[y2][x2];
+
+    int dx = (x2 > x1) - (x2 < x1);
+    int dy = (y2 > y1) - (y2 < y1); //determines direction in boolean 1 up , right and -1 down,left
+
+    int x = x1 + dx;
+    int y = y1 + dy;
+
+    while (x != x2 || y != y2) {
+        if (!(board[y][x] == '.' || board[y][x] == '-'))
+            return 1; // invalid
+        x += dx;
+        y += dy;
+    }
+
+    if (dst == '.' || dst == '-') //checks boundries
+        return 0; // valid
+
+    if (islower(src) && isupper(dst))
+        return 0; // valid capture
+
+    if (isupper(src) && islower(dst))
+        return 0; // valid capture
+
+    return 1; // invalid (own piece)
+}
+//knight
 int knight(int x1,int y1,int x2,int y2,char**board){
   if ((abs(x1-x2)==1&&abs(y1-y2)==2)||(abs(x1-x2)==2&&abs(y1-y2)==1)){
     if (board[y2][x2]=='.'||board[y2][x2]=='-') return 0;
@@ -203,179 +326,75 @@ int knight(int x1,int y1,int x2,int y2,char**board){
 
     }
   }
-
-
 }
+//bishop
+int bishop(int x1, int y1, int x2, int y2, char **board) //Better and optimized Bishop Validatator
+{
+    if (abs(x1 - x2) != abs(y1 - y2))
+        return 1;
 
-int Rook(int x1,int y1,int x2,int y2,char**board){
+    int dx = (x2 > x1) ? 1 : -1;
+    int dy = (y2 > y1) ? 1 : -1;
 
-if(!(x1==x2||y1==y2))return 1;
+    int x = x1 + dx;
+    int y = y1 + dy;
 
-
-if(islower(board[y1][x1])==1){ //white rook
-  // we are going to remove this condition and implement it in the global move validator instaead of copying and pating it everywhaere
-  if(x1<=8 && x1>=1 &&x2<=8 && x2>=1 &&y1<=8 && y1>=1 &&y2<=8 && y2>=1){
-    int x3 =x2-x1;
-    if(x3==0){
-        int y3=y2-y1;
-     if(y3>0){
-      for(int i=y1;i<y2;i++)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-    if(x3>0){
-      for(int i=y1;i<y2;i++)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-}
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-      if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-  }
-    }  
-   if(x3>0){
-      for(int i=x1;i<x2;i++)
-      if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-
-}
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 0;
-     if(islower(board[y2][x2]==1))
-      return 1;
-  
-  }}}}
-if(isupper(board[y1][x1])==1){ //black rock
-  if(x1<=8 && x1>=1 &&x2<=8 && x2>=1 &&y1<=8 && y1>=1 &&y2<=8 && y2>=1){
-    int x3 =x2-x1;
-      if(x3==0){
-        int y3=y2-y1;
-     if(y3>0){
-      for(int i=y1;i<y2;i++)
-     if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
-    if(x3>0){
-      for(int i=y1;i<y2;i++)
-     if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
-
-}
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-     if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
-  
-  }
-    }  
-   if(x3>0){
-      for(int i=x1;i<x2;i++)
-      if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2]==1))
-      return 1;
-     if(islower(board[y2][x2]==1))
-      return 0;
-}
-   if(x3>0){
-      for(int i=x1;i>x2;i--)
-    if(!(board[y1][i]=='.'||board[y1][i]=='-'))
-      return 1;
-     if(isupper(board[y2][x2])==1)
-      return 1;
-     if(islower(board[y2][x2])==1)
-      return 0;
-  }}}}
- return 0;
-}
-
-int bishop(int x1,int y1,int x2,int y2,char**board){
-
-  if (!(abs(x1-x2)==abs(y1-y2))) return 1;
-  if ((x2-x1)>=0 && (y2-y1)>=0){
-    int o1=x1,o2=y1;
-    while(o1<x2 && o2<y2){
-      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
-      o2++;
-      o1++;}
-    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
-    else{
-      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
-      else return 0;}
-  }
-  else if ((x2-x1)<0 && (y2-y1)<0){int o1=x1,o2=y1;
-    while(o1>x2 && o2>y2){
-      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
-      o2--;
-      o1--;
+    while (x != x2 && y != y2) {
+        if (board[y][x] != '.' && board[y][x] != '-')
+            return 1;
+        x += dx;
+        y += dy;
     }
-    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
-    else{
-      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
-      else return 0;
-    }}
-  else if ((x2-x1)<0 && (y2-y1)>0){
-    int o1=x1,o2=y1;
-    while(o1>x2 && o2<y2){
-      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
-      o2++;
-      o1--;
-    }
-    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
-    else{
-      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
-      else return 0;
-    }
-  }
-  else if ((x2-x1)>0 && (y2-y1)<0){
-    int o1=x1,o2=y1;
-    while(o1<x2 && o2>y2){
-      if (board[o2][o1]!='.'||board[o2][o1]!='-') return 1;
-      o2--;
-      o1++;
-    }
-    if (board[y2][x2]!='.'||board[y2][x2]!='-') return 0;
-    else{
-      if(isupper(board[y1][x1])==isupper(board[y2][x2])) return 1;
-      else return 0;
-    }
-  }
-  
 
+    if (board[y2][x2] == '.' || board[y2][x2] == '-')
+        return 0;
 
+    if (isupper(board[y1][x1]) == isupper(board[y2][x2]))
+        return 1;
+
+    return 0;
 }
+//king
+int king(int x1, int y1, int x2, int y2, char **board)
+{
+    // Must move
+    if (x1 == x2 && y1 == y2)
+        return 1;
 
+    // King moves max 1 square
+    if (abs(x1 - x2) > 1 || abs(y1 - y2) > 1)
+        return 1;
+
+    // Can't capture own piece
+    if (board[y2][x2] != '.' && board[y2][x2] != '-') {
+        if (isupper(board[y1][x1]) == isupper(board[y2][x2]))
+            return 1;
+    }
+
+    // --- simulate move ,good practice to check validity of move --- 
+    char savedFrom = board[y1][x1];
+    char savedTo   = board[y2][x2];
+
+    board[y2][x2] = board[y1][x1];
+    board[y1][x1] = '.';
+
+    // Check if king would be in check
+    int illegal = inCheck(x2, y2, board);
+
+    // --- undo move ---
+    board[y1][x1] = savedFrom;
+    board[y2][x2] = savedTo;
+
+    if (illegal)
+        return 1;
+
+    return 0;
+}
+//Queen Easiest in implementation
+int queen(int x1,int y1,int x2,int y2,char**board){
+  if(bishop(x1,y1,x2,y2,board)==0||rook(x1,y1,x2,y2,board)==0) return 0;
+  else return 1;
+}
 int main(){
 
 board=boardmaker();
