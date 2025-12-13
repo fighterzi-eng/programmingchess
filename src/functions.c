@@ -390,7 +390,11 @@ int king(int x1, int y1, int x2, int y2, char **board)
 
     return 0;
 }
-
+//Queen Easiest in implementation
+int queen(int x1,int y1,int x2,int y2,char**board){
+  if(bishop(x1,y1,x2,y2,board)==0||rook(x1,y1,x2,y2,board)==0) return 0;
+  else return 1;
+}
 int main(){
 
 board=boardmaker();
