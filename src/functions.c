@@ -1,3 +1,4 @@
+//splitted succesfully you can delete this file if everything is fine
 //we need to split this file into multiple files because its too large about 400 lines
 #include <ctype.h>
 #include <stdio.h>
