@@ -77,7 +77,7 @@ int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
   return validity;}
   return validity;
 }
-void move(int x1,int y1,int x2,int y2,char**board,char*dead){
+void moving(int x1,int y1,int x2,int y2,char**board,char*dead){
   static int deadn=0;
   if (!(board[y1][x1]=='-'||board[y1][x1]=='.')){
     dead[deadn]=board[y2][x2];

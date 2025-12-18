@@ -136,10 +136,19 @@ if (whiteKing) {//NEEDS CAREFUL DEBUGGING LATER NOT 100% sure it even works
 // if every thing ok returns safe
     return 0;
 }
+void boardprint(char**board){
+    for(int i=8;i>0;i--){
+        for(int j=1;j<9;j++){
+            printf("%c",board[i][j]);
+
+        }
+        printf("\n");
+    }
+}
 //this is a basic way of checking danger and it will work but its not efficent
 //i can make it more efficent if i can track each piece
 //return 1 if danger,0 if safe
-/*int checkdanger(int x,int y,char**board){ Danger Checker V1
+/*int incheck(int x,int y,char**board){ Danger Checker V1
   for(int i=1;i<9;i++){
     for(int j=1;j<9;j++){
       if((board[i][j]=='-'||board[i][j]=='.')) continue;
