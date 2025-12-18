@@ -157,7 +157,7 @@ int pawn(int x1,int y1,int x2,int y2,char**board){
     return 1;
 }
 //this function is the exception to a rule ,it can move pieces
-int pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
+void pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
   if(pawn(x1,y1,x2,y2,board)==0){
     if (isupper(board[y1][x1])==0){
       if(y2==8){

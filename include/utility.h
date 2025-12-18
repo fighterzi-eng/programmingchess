@@ -13,5 +13,6 @@
 char** boardmaker();
 int inside(int x, int y);
 int inCheck(int kx, int ky, char **board);
+void boardprint(char**board);
 //int checkdanger(int x,int y,char**board);
 #endif
