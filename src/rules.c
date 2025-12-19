@@ -1,4 +1,5 @@
 #include"include/rules.h"
+#include"include/undo.h"
 int endgamecheck(int*kingpos,char**board){
   int kx=kingpos[0];
   int ky=kingpos[1];
@@ -58,6 +59,10 @@ int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
     validity= 1;
     break;
   }
+  
+
+
+
   //this part check if the king is in danger after the move ,i took abit from your king function underneath
   if (validity==0){
   char savedFrom = board[y1][x1];
@@ -77,15 +82,28 @@ int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
   return validity;}
   return validity;
 }
-void moving(int x1,int y1,int x2,int y2,char**board,char*dead){
-  static int deadn=0;
-  if (!(board[y1][x1]=='-'||board[y1][x1]=='.')){
-    dead[deadn]=board[y2][x2];
-    deadn++;
+char check_promotion(char piece, int y2) {
+    if ((piece == 'p' && y2 == 1) || (piece == 'P' && y2 == 8)) {
+        char new_piece;
+        printf("Promote pawn to (q,r,b,n): ");
+        scanf(" %c", &new_piece);
+        if (piece == 'P') new_piece = toupper(new_piece);
+        return new_piece;
+    }
+    return 0;
+}
+void moving(move *m, char **board, char *dead) {
+    static int deadn = 0;
 
-  }
-  board[y2][x2]=board[y1][x1];
-  board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+    // Track captured piece
+    m->p2 = board[m->y2][m->x2]; 
+    if (!(board[m->y2][m->x2] == '-' || board[m->y2][m->x2] == '.')) {
+        dead[deadn++] = board[m->y2][m->x2];
+    }
 
+    // Move piece
+    board[m->y2][m->x2] = m->promotion ? m->promotion : m->p1;
 
+    // Empty original square
+    board[m->y1][m->x1] = ((m->y1 + m->x1) % 2 == 0) ? '-' : '.';
 }

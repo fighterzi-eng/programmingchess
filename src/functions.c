@@ -170,7 +170,8 @@ int pawn(int x1,int y1,int x2,int y2,char**board){
 
     if (x1 == x2 && y2 == y1 + direction && (board[y2][x2]=='-'||board[y2][x2]=='.'))
         return 0;
-    if (abs(x2-x1)==1 && y2 == y1 + direction && isupper(board[y1][x1])!=isupper(board[y2][x2]))
+    if (abs(x2-x1)==1 && y2 == y1 + direction && isupper(board[y1][x1])!=isupper(board[y2][x2])&& !EMPTY(board[y2][x2])
+)
         return 0;
 
     if (x1 == x2 &&
@@ -185,8 +186,9 @@ int pawn(int x1,int y1,int x2,int y2,char**board){
 
     return 1;
 }
-//this function is the exception to a rule ,it can move pieces
-int pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
+//this function is the exception to a rule ,it can move pieces 
+// !!!!!this will break undo redo so i redesigned it
+/*void pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
   if(pawn(x1,y1,x2,y2,board)==0){
     if (isupper(board[y1][x1])==0){
       if(y2==8){
@@ -214,7 +216,25 @@ int pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
 
     }
   }
+
+}*/  
+//v2 does not move pieces only returns new piece or 0 if no promotion better for undo redo
+char pawn_promote(char piece, int y2) {
+    if ((piece == 'p' && y2 == 1) || (piece == 'P' && y2 == 8)) {
+        char new_piece;
+        scanf(" %c", &new_piece);
+
+        new_piece = tolower(new_piece);
+        if (piece == 'P') new_piece = toupper(new_piece); // preserve color
+
+        // validate input
+        if (strchr("qrbnQRRBN", new_piece)) return new_piece;
+        printf("Invalid promotion. Try again:\n");
+        return pawn_promote(piece, y2);
+    }
+    return 0; // no promotion
 }
+
 
 //this is a basic way of checking danger and it will work but its not efficent
 //i can make it more efficent if i can track each piece

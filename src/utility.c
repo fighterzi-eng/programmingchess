@@ -1,46 +1,63 @@
 #include"include/utility.h"
+#include"include/undo.h"
+
 int inside(int x, int y) { //useful
     return (x >= 1 && x < 9 && y >= 1 && y < 9);
 }
-char** boardmaker() { //chaneged function type to return a 2d pointer for board
-    // mallocated the board inside the board functiona also increased its size for row numbers and coloumns letters from 8x8 -> 10x10
+char** boardmaker(int *whitekingpos, int *blackkingpos) { //updated to include pieces
     char **board = malloc(10 * sizeof(char*));
     for (int i = 0; i < 10; i++)
         board[i] = malloc(10 * sizeof(char));
 
-    // initialize everything to space to avoid random garbage + edge cases ex: board[0][0]
-    for (int i = 0; i < 10; i++)
-        for (int j = 0; j < 10; j++)
-            board[i][j] = ' ';
+    // Initialize everything to space to avoid garbage
+    for (int r = 0; r < 10; r++)
+        for (int c = 0; c < 10; c++)
+            board[r][c] = ' ';
 
-    // columns labels (a–h)
-    board[0][1] = board[9][1] = 'a';
-    board[0][2] = board[9][2] = 'b';
-    board[0][3] = board[9][3] = 'c';
-    board[0][4] = board[9][4] = 'd';
-    board[0][5] = board[9][5] = 'e';
-    board[0][6] = board[9][6] = 'f';
-    board[0][7] = board[9][7] = 'g';
-    board[0][8] = board[9][8] = 'h';
+    // Column labels (optional)
+    char cols[] = "abcdefgh";
+    for (int i = 0; i < 8; i++) {
+        board[0][i+1] = cols[i];  // top
+        board[9][i+1] = cols[i];  // bottom
+    }
 
-    // row labels (1–8)
-    board[1][0] = board[1][9] = '8';
-    board[2][0] = board[2][9] = '7';
-    board[3][0] = board[3][9] = '6';
-    board[4][0] = board[4][9] = '5';
-    board[5][0] = board[5][9] = '4';
-    board[6][0] = board[6][9] = '3';
-    board[7][0] = board[7][9] = '2';
-    board[8][0] = board[8][9] = '1';
+    // Row labels (optional)
+    for (int i = 1; i <= 8; i++) {
+        board[i][0] = '0' + (9-i);  // left
+        board[i][9] = '0' + (9-i);  // right
+    }
 
-    // fill board pattern (changed i,j to r,c for clarity)
-    for (int r = 1; r < 9; r++)
-        for (int c = 1; c < 9; c++)
-            board[r][c] = ((r + c) % 2 == 0) ? '-' : '.';
+    // Fill board pattern
+    for (int y = 1; y < 9; y++)
+        for (int x = 1; x < 9; x++)
+            board[y][x] = ((y + x) % 2 == 0) ? '-' : '.';
 
-   
+    // Black pieces (top)
+    char blackBack[] = "RNBQKBNR";
+    for (int i = 0; i < 8; i++) {
+        board[1][i+1] = blackBack[i]; // back rank
+        board[2][i+1] = 'P';          // pawns
+    }
+
+    // White pieces (bottom)
+    char whiteBack[] = "rnbqkbnr";   // lowercase for white
+    for (int i = 0; i < 8; i++) {
+        board[8][i+1] = whiteBack[i]; // back rank
+        board[7][i+1] = 'p';          // pawns
+    }
+
+       // Set king positions automatically
+    if (whitekingpos != NULL) {
+        whitekingpos[0] = 5; // x
+        whitekingpos[1] = 8; // y
+    }
+    if (blackkingpos != NULL) {
+        blackkingpos[0] = 5; // x
+        blackkingpos[1] = 1; // y
+    }
     return board;
-} 
+}
+
 int inCheck(int kx, int ky, char **board) //1 = Danger , 0 = safe
 {
     char king = board[ky][kx];
@@ -145,6 +162,38 @@ void boardprint(char**board){
         printf("\n");
     }
 }
+// added move parser
+    void boardprint(char** board) {
+    for (int i = 8; i > 0; i--) {
+        for (int j = 1; j < 9; j++) {
+            printf("%c", board[i][j]);
+        }
+        printf("\n");
+    }
+} 
+ int parseMove(char *move, int *x1, int *y1, int *x2, int *y2) //Move parser e.g. e2e4 to (5,7) to (5,5)
+{
+
+    if (strlen(move) < 4) return 0;
+
+    if (move[0] < 'a' || move[0] > 'h' ||
+        move[2] < 'a' || move[2] > 'h' ||
+        move[1] < '1' || move[1] > '8' ||
+        move[3] < '1' || move[3] > '8')
+        return 1;
+
+    *x1 = (move[0] - 'a') + 1;
+    *y1 = 9 - (move[1] - '0');
+
+    *x2 = (move[2] - 'a') + 1;
+    *y2 = 9 - (move[3] - '0');
+
+    return 1;
+}
+
+
+
+
 //this is a basic way of checking danger and it will work but its not efficent
 //i can make it more efficent if i can track each piece
 //return 1 if danger,0 if safe
