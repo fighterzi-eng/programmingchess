@@ -40,13 +40,15 @@ void redo(char **board, move m, int whitekingpos[2], int blackkingpos[2])
 }
 
 
-void addmove(int x1,int y1,char p1,int x2,int y2,char p2,int n,int*whiteking,int*blacking){
+void addmove(int x1,int y1,char p1,int x2,int y2,char p2,int n,int*whiteking,int*blacking,char promotion){
     moves[n].p1=p1;
     moves[n].p2=p2;
     moves[n].x1=x1;
     moves[n].x2=x2;
     moves[n].y1=y1;
     moves[n].y2=y2;
+    
+
 
 }
 //n is the same as the number of turns and its taken by reference to avoid logical errors when redoing again

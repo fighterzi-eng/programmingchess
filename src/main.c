@@ -76,12 +76,12 @@ if (parseMove(input, &x1, &y1, &x2, &y2)) {
             addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n);
             if (board[y1][x1]=='p') pawnwthpromote(x1,y1,x2,y2,board);
             else if(board[y1][x1]=='k'){
-                moving(moves[n],board,dead);
+                moving(&moves[n],board,dead);
                 whitekingpos[0]=x2;
                 whitekingpos[1]=y2;
 
             }
-            else moving(moves[n],board,dead);
+            else moving(&moves[n],board,dead);
             n++;
             
 
@@ -96,12 +96,12 @@ if (parseMove(input, &x1, &y1, &x2, &y2)) {
             addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n);
             if (board[y1][x1]=='P') pawnwthpromote(x1,y1,x2,y2,board);
             else if(board[y1][x1]=='K'){
-                moving(moves[n],board,dead);
+                moving(&moves[n],board,dead);
                 blackkingpos[0]=x2;
                 blackkingpos[1]=y2;
 
             }
-            else moving(moves[n],board,dead);
+            else moving(&moves[n],board,dead);
             n++;
 
         }
@@ -113,9 +113,6 @@ if (parseMove(input, &x1, &y1, &x2, &y2)) {
     if(w==2||b==2) printf("game over the result is a draw");
     else if(w==1) printf("game over the result is black wins");
     else if(b==1) printf("game over the result is white wins");
-    //this  is probably wron because we assigned it in a function so its not tracked ,i placed it here to remind us to do it later
-   
-  //correctly free the allocated memory 
    for (int i = 0; i < 10; i++)
     free(board[i]);
 free(board);
