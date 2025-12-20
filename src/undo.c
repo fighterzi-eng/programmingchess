@@ -13,6 +13,7 @@
 }move;*/ //we already have this in the header file cant define it twice
 
 move moves[1024];
+//this doesnt need compensation for promotion
 void undo(char **board, move m, int *whitekingpos, int *blackkingpos)
 {
     board[m.y1][m.x1] = m.p1;
@@ -27,6 +28,7 @@ void undo(char **board, move m, int *whitekingpos, int *blackkingpos)
 void redo(char **board, move m, int whitekingpos[2], int blackkingpos[2])
 {
     board[m.y2][m.x2] = m.p1;
+    if (m.promotion!='0') board[m.y2][m.x2] = m.promotion;
     board[m.y1][m.x1] = (m.p2 == '.' || m.p2 == '-') ? m.p2 : '.';
 
     if (m.p1 == 'k') {
@@ -40,13 +42,17 @@ void redo(char **board, move m, int whitekingpos[2], int blackkingpos[2])
 }
 
 
-void addmove(int x1,int y1,char p1,int x2,int y2,char p2,int n,int*whiteking,int*blacking){
+void addmove(int x1,int y1,char p1,int x2,int y2,char p2,int n,char promotion){
     moves[n].p1=p1;
     moves[n].p2=p2;
     moves[n].x1=x1;
     moves[n].x2=x2;
     moves[n].y1=y1;
     moves[n].y2=y2;
+    moves[n].promotion=promotion;
+
+
+
 
 }
 //n is the same as the number of turns and its taken by reference to avoid logical errors when redoing again

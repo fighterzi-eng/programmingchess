@@ -8,6 +8,7 @@ int main(){
     char dead[32];
     char input[32];
     int x1, y1, x2, y2;
+    char op;
     // here we should have an option to load a game or start a new game
     //we should add the pieces to the board maker
     
@@ -15,6 +16,9 @@ int main(){
     int blackkingpos[2];
     int whitekingpos[2];
     char**board=boardmaker(whitekingpos,blackkingpos);
+    printf("enter l to load game or anything else to start a new game");
+    scanf("%c",&op);
+    if(op=='l') laod("empty.txt",board);
     boardprint(board);
     //both are in x,y
     int w=0,b=0;
@@ -35,19 +39,16 @@ input[strcspn(input, "\n")] = '\0';
   moves[n].bky_before = blackkingpos[1];}
     
 if (strcmp(input, "save") == 0) {
-    save_game("game.chs", moves, n);
+    save_gametxt("empty.txt", board);
     continue;
 }
 
-if (strcmp(input, "load") == 0) {
-    load_game("game.chs", board, moves, &n,
-              whitekingpos, blackkingpos);
-    boardprint(board);
-    continue;
-}
+if (strcmp(input, "exit") == 0) break;
 
-
-if (strcmp(input, "undo") == 0) { //added undo redo functionality Here directly
+//we need t o think a bit about how the undo redo bec if we excedded the original n we will get unexpected results
+if (strcmp(input, "undo") == 0) {
+     //added undo redo functionality Here directly
+     if (n==0) continue;
     undo(board, moves[n - 1], whitekingpos, blackkingpos);
     n--;
     boardprint(board);
@@ -73,15 +74,15 @@ if (parseMove(input, &x1, &y1, &x2, &y2)) {
                 printf("invalid move try again");
                 continue;
             }
-            addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n);
-            if (board[y1][x1]=='p') pawnwthpromote(x1,y1,x2,y2,board);
-            else if(board[y1][x1]=='k'){
-                moving(moves[n],board,dead);
+            char prom=check_promotion(board[y1][x1],y2);
+            addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom);
+            if(board[y1][x1]=='k'){
+                moving(&moves[n],board,dead);
                 whitekingpos[0]=x2;
                 whitekingpos[1]=y2;
 
             }
-            else moving(moves[n],board,dead);
+            else moving(&moves[n],board,dead);
             n++;
             
 
@@ -93,15 +94,15 @@ if (parseMove(input, &x1, &y1, &x2, &y2)) {
                 printf("invalid move try again");
                 continue;
             }
-            addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n);
-            if (board[y1][x1]=='P') pawnwthpromote(x1,y1,x2,y2,board);
-            else if(board[y1][x1]=='K'){
-                moving(moves[n],board,dead);
+            char prom=check_promotion(board[y1][x1],y2);
+            addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom);
+            if(board[y1][x1]=='K'){
+                moving(&moves[n],board,dead);
                 blackkingpos[0]=x2;
                 blackkingpos[1]=y2;
 
             }
-            else moving(moves[n],board,dead);
+            else moving(&moves[n],board,dead);
             n++;
 
         }
@@ -113,9 +114,6 @@ if (parseMove(input, &x1, &y1, &x2, &y2)) {
     if(w==2||b==2) printf("game over the result is a draw");
     else if(w==1) printf("game over the result is black wins");
     else if(b==1) printf("game over the result is white wins");
-    //this  is probably wron because we assigned it in a function so its not tracked ,i placed it here to remind us to do it later
-   
-  //correctly free the allocated memory 
    for (int i = 0; i < 10; i++)
     free(board[i]);
 free(board);
