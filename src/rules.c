@@ -94,12 +94,15 @@ char check_promotion(char piece, int y2) {
 }
 void moving(move *m, char **board, char *dead) {
     static int deadn = 0;
+    if (!(board[m->y2][m->x2] == '-' || board[m->y2][m->x2] == '.')) {
+        deadn++;
+        dead[deadn] = board[m->y2][m->x2];
+        deadn++;
+    }
 
     // Track captured piece
     m->p2 = board[m->y2][m->x2]; 
-    if (!(board[m->y2][m->x2] == '-' || board[m->y2][m->x2] == '.')) {
-        dead[deadn++] = board[m->y2][m->x2];
-    }
+    
 
     // Move piece
     board[m->y2][m->x2] = m->promotion ? m->promotion : m->p1;

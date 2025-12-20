@@ -163,18 +163,11 @@ void boardprint(char**board){
     }
 }
 // added move parser
-    void boardprint(char** board) {
-    for (int i = 8; i > 0; i--) {
-        for (int j = 1; j < 9; j++) {
-            printf("%c", board[i][j]);
-        }
-        printf("\n");
-    }
-} 
+
  int parseMove(char *move, int *x1, int *y1, int *x2, int *y2) //Move parser e.g. e2e4 to (5,7) to (5,5)
 {
-
-    if (strlen(move) < 4) return 0;
+//you forgot to take the \n and \0 so i changed it to5
+    if (strlen(move) < 5) return 0;
 
     if (move[0] < 'a' || move[0] > 'h' ||
         move[2] < 'a' || move[2] > 'h' ||
