@@ -90,7 +90,7 @@ char check_promotion(char piece, int y2) {
         if (piece == 'P') new_piece = toupper(new_piece);
         return new_piece;
     }
-    return 0;
+    return '0';
 }
 void moving(move *m, char **board, char *dead) {
     static int deadn = 0;
@@ -102,10 +102,11 @@ void moving(move *m, char **board, char *dead) {
 
     // Track captured piece
     m->p2 = board[m->y2][m->x2]; 
-    
+    char ch=m->p1;
+    if (m->promotion!='0') ch=m->promotion;
 
     // Move piece
-    board[m->y2][m->x2] = m->promotion ? m->promotion : m->p1;
+    board[m->y2][m->x2] = ch;
 
     // Empty original square
     board[m->y1][m->x1] = ((m->y1 + m->x1) % 2 == 0) ? '-' : '.';
