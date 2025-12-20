@@ -3,13 +3,12 @@
 #include "rules.h"
 #include "saveload.h"
 
-
-void save_game(const char *filename, move *moves, int n)
+//you dont need to use a binary file just make a test file and copy the board to it 
+void save_game( char *filename, move *moves, int n)
 {
     FILE *f = fopen(filename, "wb");
     if (!f) {
         printf("Failed to save game\n");
-        return;
     }
 
     fwrite(&n, sizeof(int), 1, f);          // number of moves
@@ -18,7 +17,7 @@ void save_game(const char *filename, move *moves, int n)
     fclose(f);
     printf("Game saved successfully\n");
 }
-
+//we dont acually need this we will just call board maker
 void boardreset(char **board)
 {
     // clear board pattern
@@ -37,14 +36,10 @@ void boardreset(char **board)
         board[8][i+1] = toupper(back[i]);
     }
 }
-
-int load_game(const char *filename,
+//there is a problem
+int load_game( char *filename,
               char **board,
-              move *moves,
-              int *n,
-              int *whiteKingPos,
-              int *blackKingPos)
-{
+              move *moves,int *n,int *whiteKingPos,int *blackKingPos){
     FILE *f = fopen(filename, "rb");
     if (!f) {
         printf("Failed to load game\n");

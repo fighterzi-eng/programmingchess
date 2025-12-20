@@ -157,32 +157,32 @@ int pawn(int x1,int y1,int x2,int y2,char**board){
     return 1;
 }
 //this function is the exception to a rule ,it can move pieces
-void pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
-  if(pawn(x1,y1,x2,y2,board)==0){
-    if (isupper(board[y1][x1])==0){
-      if(y2==8){
-        board[y2][x2]=promote();
-        board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+// void pawnwthpromote(int x1,int y1,int x2,int y2,char**board){
+//   if(pawn(x1,y1,x2,y2,board)==0){
+//     if (isupper(board[y1][x1])==0){
+//       if(y2==8){
+//         board[y2][x2]=promote();
+//         board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
 
-      }
-      else{
-        board[y2][x2]=board[y1][x1];
-        board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+//       }
+//       else{
+//         board[y2][x2]=board[y1][x1];
+//         board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
 
-      }
-    }
-    else{
-      if(y2==1){
-        board[y2][x2]=toupper(promote());
-        board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+//       }
+//     }
+//     else{
+//       if(y2==1){
+//         board[y2][x2]=toupper(promote());
+//         board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
 
-      }
-      else{
-        board[y2][x2]=board[y1][x1];
-        board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
+//       }
+//       else{
+//         board[y2][x2]=board[y1][x1];
+//         board[y1][x1] = ((y1 + x1) % 2 == 0) ? '-' : '.';
 
-      }
+//       }
 
-    }
-  }
-}
+//     }
+//   }
+// }

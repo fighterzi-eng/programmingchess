@@ -14,5 +14,6 @@ char** boardmaker();
 int inside(int x, int y);
 int inCheck(int kx, int ky, char **board);
 void boardprint(char**board);
+int parseMove(char *move, int *x1, int *y1, int *x2, int *y2);
 //int checkdanger(int x,int y,char**board);
 #endif

@@ -1,6 +1,5 @@
 #ifndef SAVELOAD_H
 #define SAVELOAD_H
-
 #include "undo.h"
 
 // Save and load functions
