@@ -3,31 +3,63 @@
 #include"include/pieces.h"
 #include"include/undo.h"
 #include"include/saveload.h"
-int main(){
-    int n=0;
+int ep_target_x, ep_target_y;
+bool wk_castle_ks = true, wk_castle_qs = true;
+bool bk_castle_ks = true, bk_castle_qs = true;//castle rights
+
+int main() {
+    int n = 0;
+
     char dead[32];
-    char input[32];
+    char menu[8];        // <-- NEW: menu input buffer
+    char input[32];      // <-- move input buffer
+
     int x1, y1, x2, y2;
     char op;
-    // here we should have an option to load a game or start a new game
-    //we should add the pieces to the board maker
-    
-    //we should put the start postion here as an intitial valuue //already included in new boardmaker
+
     int blackkingpos[2];
     int whitekingpos[2];
-    char**board=boardmaker(whitekingpos,blackkingpos);
-    printf("enter l to load game or anything else to start a new game");
-    scanf("%c",&op);
-    if(op=='l') laod("empty.txt",board);
+
+    char **board = boardmaker(whitekingpos, blackkingpos);
+
+    /* -------- Menu input -------- */
+    printf("enter l to load game or anything else to start a new game\n");
+
+    if (!fgets(menu, sizeof(menu), stdin)) {
+        printf("input error\n");
+        return 1;
+    }
+
+    op = menu[0];
+
+    if (op == 'l') {
+        load("empty.txt", board);
+    }
+
+    /* -------- Game initialization -------- */
+    ep_target_x = 0;
+    ep_target_y = 0;
+
+   updateKingPositions(board, whitekingpos, blackkingpos);
     boardprint(board);
-    //both are in x,y
-    int w=0,b=0;
-    while(w==0&&b==0){
-//Added move parser in utility.c
 
+   memset(moves, 0, sizeof(moves));
 
-printf("enter your move in format ex: (e2e4):");
-printf("\nenter 'undo' to undo last move or 'redo' to redo last undone move\n");
+    int w = 0, b = 0;
+
+    /* -------- Main game loop -------- */
+    while (w == 0 && b == 0) {
+
+        printf("enter your move in format ex: (e2e4):\n");
+        printf("enter 'undo' to undo last move or 'redo' to redo last undone move\n");
+
+        if (!fgets(input, sizeof(input), stdin)) {
+            break;
+        }
+
+        /* Strip newline */
+        input[strcspn(input, "\n")] = '\0';
+
 
 fgets(input, sizeof(input), stdin); // Read user input
 input[strcspn(input, "\n")] = '\0';

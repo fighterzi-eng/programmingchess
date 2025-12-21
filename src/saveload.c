@@ -81,7 +81,7 @@ void save_gametxt( char *filename, char**board)
     fclose(f);
     printf("Game saved successfully\n");
 }
-void laod(char*filename,char**board){
+void load(char*filename,char**board){
     FILE *f = fopen(filename, "r");
     if (!f) {
         printf("Failed to load game\n");

@@ -1,6 +1,8 @@
 #include"include/utility.h"
 #include"include/undo.h"
 
+extern bool wk_castle_ks, wk_castle_qs, bk_castle_ks, bk_castle_qs;
+
 int inside(int x, int y) { //useful
     return (x >= 1 && x < 9 && y >= 1 && y < 9);
 }
@@ -32,19 +34,19 @@ char** boardmaker(int *whitekingpos, int *blackkingpos) { //updated to include p
         for (int x = 1; x < 9; x++)
             board[y][x] = ((y + x) % 2 == 0) ? '-' : '.';
 
-    // Black pieces (top)
-    char blackBack[] = "RNBQKBNR";
-    for (int i = 0; i < 8; i++) {
-        board[1][i+1] = blackBack[i]; // back rank
-        board[2][i+1] = 'P';          // pawns
-    }
+// Black pieces (top, rank 8)
+char blackBack[] = "RNBQKBNR";
+for (int i = 0; i < 8; i++) {
+    board[8][i+1] = blackBack[i];
+    board[7][i+1] = 'P';
+}
 
-    // White pieces (bottom)
-    char whiteBack[] = "rnbqkbnr";   // lowercase for white
-    for (int i = 0; i < 8; i++) {
-        board[8][i+1] = whiteBack[i]; // back rank
-        board[7][i+1] = 'p';          // pawns
-    }
+// White pieces (bottom, rank 1)
+char whiteBack[] = "rnbqkbnr";
+for (int i = 0; i < 8; i++) {
+    board[1][i+1] = whiteBack[i];
+    board[2][i+1] = 'p';
+}
 
        // Set king positions automatically
     if (whitekingpos != NULL) {
@@ -118,23 +120,19 @@ int inCheck(int kx, int ky, char **board) //1 = Danger , 0 = safe
             if (!whiteKing && p == 'n') return 1;
         }
     }
-if (whiteKing) {//NEEDS CAREFUL DEBUGGING LATER NOT 100% sure it even works
-        // black pawns attack DOWN
-        int px[2] = {kx - 1, kx + 1};
-        int py = ky + 1;
-
-        for (int i = 0; i < 2; i++)
-            if (inside(px[i], py) && board[py][px[i]] == 'P')
-                return 1;
-    } else {
-        // white pawns attack UP
-        int px[2] = {kx - 1, kx + 1};
-        int py = ky - 1;
-
-        for (int i = 0; i < 2; i++)
-            if (inside(px[i], py) && board[py][px[i]] == 'p')
-                return 1;
-    }
+if (whiteKing) {  // White king, check for black 'P' above (ky-1)
+    int px[2] = {kx - 1, kx + 1};
+    int py = ky - 1;
+    for (int i = 0; i < 2; i++)
+        if (inside(px[i], py) && board[py][px[i]] == 'P')
+            return 1;
+} else {  // Black king, check for white 'p' below (ky + 1)
+    int px[2] = {kx - 1, kx + 1};
+    int py = ky + 1;
+    for (int i = 0; i < 2; i++)
+        if (inside(px[i], py) && board[py][px[i]] == 'p')
+            return 1;
+}
     //Checks for enemy king 
     for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
@@ -154,9 +152,9 @@ if (whiteKing) {//NEEDS CAREFUL DEBUGGING LATER NOT 100% sure it even works
     return 0;
 }
 void boardprint(char**board){
-    for(int i=8;i>0;i--){
-        for(int j=1;j<9;j++){
-            printf("%c",board[i][j]);
+    for(int i=10;i>0;i--){
+        for(int j=0;j<10;j++){
+            printf(" %c",board[i][j]);
 
         }
         printf("\n");
@@ -164,26 +162,35 @@ void boardprint(char**board){
 }
 // added move parser
 
- int parseMove(char *move, int *x1, int *y1, int *x2, int *y2) //Move parser e.g. e2e4 to (5,7) to (5,5)
-{
-//you forgot to take the \n and \0 so i changed it to5
-    if (strlen(move) < 5) return 0;
+int parseMove(char *move, int *x1, int *y1, int *x2, int *y2) {
+    if (strlen(move) != 4) return 1;  // Exactly 4 chars for e2e4 style notation
 
     if (move[0] < 'a' || move[0] > 'h' ||
         move[2] < 'a' || move[2] > 'h' ||
         move[1] < '1' || move[1] > '8' ||
         move[3] < '1' || move[3] > '8')
-        return 1;
+        return 1;  // Invalid chars
 
     *x1 = (move[0] - 'a') + 1;
     *y1 = 9 - (move[1] - '0');
-
     *x2 = (move[2] - 'a') + 1;
     *y2 = 9 - (move[3] - '0');
 
-    return 1;
+    return 0;  // Success!
 }
-
+void updateKingPositions(char** board, int* whitekingpos, int* blackkingpos) {
+    for (int y = 1; y < 9; y++) {
+        for (int x = 1; x < 9; x++) {
+            if (board[y][x] == 'k') {
+                whitekingpos[0] = x;
+                whitekingpos[1] = y;
+            } else if (board[y][x] == 'K') {
+                blackkingpos[0] = x;
+                blackkingpos[1] = y;
+            }
+        }
+    }
+}
 
 
 

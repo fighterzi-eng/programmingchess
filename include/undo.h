@@ -1,16 +1,14 @@
 #ifndef UNDO_H
 #define UNDO_H
 typedef struct {
-    int x1, y1;
-    char p1;       // moving piece before move
-    int x2, y2;
-    char p2;       // captured piece (or EMPTY)
-    char promotion; // if a pawn promotes, store new piece here; else 0
-
-    int wkx_before, wky_before;
-    int bkx_before, bky_before;
+    int x1, y1, x2, y2;
+    char p1, p2, promotion;
+    int wkx_before, wky_before, bkx_before, bky_before;  //  king pos saves
+    // NEW:
+    int rook_x1, rook_x2;
+    char r_p1;
+    char ep_captured_p;
 } move;
-
 
 extern move moves[1024];
 void undo(char **board,move move,int *whitekingpos, int* blackkingpos);

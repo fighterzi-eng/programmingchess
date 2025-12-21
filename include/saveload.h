@@ -7,6 +7,6 @@
 //int load_game(const char *filename, char **board, move *moves, int *n,int *whiteKingPos, int *blackKingPos);
 //void boardreset(char **board);
 void save_gametxt( char *filename, char**board);
-void laod(char*filename,char**board);
+void load(char*filename,char**board);
 
 #endif

@@ -1,5 +1,7 @@
 #include"include/rules.h"
 #include"include/undo.h"
+#include"include/utility.h"
+
 int endgamecheck(int*kingpos,char**board){
   int kx=kingpos[0];
   int ky=kingpos[1];
@@ -60,9 +62,6 @@ int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
     break;
   }
   
-
-
-
   //this part check if the king is in danger after the move ,i took abit from your king function underneath
   if (validity==0){
   char savedFrom = board[y1][x1];
@@ -70,9 +69,24 @@ int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
 
   board[y2][x2] = board[y1][x1];
   board[y1][x1] = '.';
+  // EP sim remove captured
+char saved_cap = ' ';
+bool doing_ep = (abs(x2-x1)==1 && EMPTY(savedTo) && tolower(piece)=='p' &&
+                 ((islower(board[y1][x1]) && board[y1][x2]=='P') ||
+                  (isupper(board[y1][x1]) && board[y1][x2]=='p')));
+if (doing_ep) {
+    saved_cap = board[y1][x2];
+    board[y1][x2] = '.';
+}
+int illegal = inCheck(kx, ky, board);
+// Undo
+board[y1][x1] = savedFrom;
+board[y2][x2] = savedTo;
+if (doing_ep) board[y1][x2] = saved_cap;
+if (illegal) return 1;
 
     // Check if king would be in check
-  int illegal = inCheck(kx, ky, board);
+   illegal = inCheck(kx, ky, board);
 
     // --- undo move ---
   board[y1][x1] = savedFrom;
@@ -94,20 +108,69 @@ char check_promotion(char piece, int y2) {
 }
 void moving(move *m, char **board, char *dead) {
     static int deadn = 0;
-    if (!(board[m->y2][m->x2] == '-' || board[m->y2][m->x2] == '.')) {
-        deadn++;
-        dead[deadn] = board[m->y2][m->x2];
-        deadn++;
+    m->p2 = board[m->y2][m->x2];  // Save to sq (empty for ep/castle)
+
+    // CASTLE? (Detect and slide rook—flags not touched yet!)
+    if (tolower(m->p1) == 'k' && abs(m->x2 - m->x1) == 2 && m->x1 == 5) {
+        bool ks = (m->x2 > m->x1);
+        m->rook_x1 = ks ? 8 : 1;
+        m->rook_x2 = ks ? 6 : 4;
+        m->r_p1 = board[m->y1][m->rook_x1];
+        // Move rook
+        char empty_r1 = ((m->y1 + m->rook_x1) % 2 == 0) ? '-' : '.';
+        board[m->y1][m->rook_x2] = m->r_p1;
+        board[m->y1][m->rook_x1] = empty_r1;
     }
 
-    // Track captured piece
-    m->p2 = board[m->y2][m->x2]; 
-    char ch=m->p1;
-    if (m->promotion!='0') ch=m->promotion;
+    // EN PASSANT capture?
+    bool is_ep = (tolower(m->p1) == 'p' && abs(m->x2 - m->x1) == 1 && 
+                  EMPTY(m->p2) && board[m->y1][m->x2] == (islower(m->p1) ? 'P' : 'p'));
+    if (is_ep) {
+        m->ep_captured_p = board[m->y1][m->x2];
+        char empty_cap = ((m->y1 + m->x2) % 2 == 0) ? '-' : '.';
+        board[m->y1][m->x2] = empty_cap;
+        // Dead: treat as capture
+        deadn++; dead[deadn] = m->ep_captured_p;  // Adjust your deadn++ logic
+    } else if (!EMPTY(m->p2)) {
+        deadn++; dead[deadn] = m->p2;  // Normal capture
+    }
 
-    // Move piece
+    // Normal piece move (promotion handled)
+    char ch = m->p1;
+    if (m->promotion != '0') ch = m->promotion;
     board[m->y2][m->x2] = ch;
-
-    // Empty original square
     board[m->y1][m->x1] = ((m->y1 + m->x1) % 2 == 0) ? '-' : '.';
+
+    // SET EP TARGET (reset unless double pawn)
+    if (tolower(m->p1) == 'p' && m->x1 == m->x2 && abs(m->y2 - m->y1) == 2 &&
+        ((m->y1 == 7 && islower(m->p1)) || (m->y1 == 2 && isupper(m->p1)))) {
+        ep_target_x = m->x2;
+        ep_target_y = (m->y1 + m->y2) / 2;
+    } else {
+        ep_target_x = 0;
+        ep_target_y = 0;
+    }
+
+    // NOW: Update castling flags! (After move committed—king/rook "has moved" now 😂)
+    // Kill on KING move (both sides)
+    if (tolower(m->p1) == 'k') {
+        if (islower(m->p1)) {  // White
+            wk_castle_ks = wk_castle_qs = false;
+        } else {  // Black
+            bk_castle_ks = bk_castle_qs = false;
+        }
+    }
+
+    // Kill on ROOK move (check which one)
+    else if (toupper(m->p1) == 'R') {  // Rook!
+        int rx = m->x1;  // Orig pos
+        bool is_white = islower(m->p1);
+        if (is_white && m->y1 == 8) {  // White back rank
+            if (rx == 1) wk_castle_qs = false;
+            if (rx == 8) wk_castle_ks = false;
+        } else if (m->y1 == 1) {  // Black
+            if (rx == 1) bk_castle_qs = false;
+            if (rx == 8) bk_castle_ks = false;
+        }
+    }
 }
