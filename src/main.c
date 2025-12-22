@@ -11,6 +11,7 @@ int main() {
     int n = 0;
 
     char dead[32];
+    memset(dead, 0, sizeof(dead));
     char menu[8];        // <-- NEW: menu input buffer
     char input[32];      // <-- move input buffer
 
@@ -34,6 +35,7 @@ int main() {
 
     if (op == 'l') {
         load("empty.txt", board);
+        deadn = 0; memset(dead, 0, sizeof(dead));
     }
 
     /* -------- Game initialization -------- */
@@ -52,7 +54,11 @@ int main() {
 
         printf("\nenter your move in format ex: (e2e4):\n");
         printf("enter 'undo' to undo last move or 'redo' to redo last undone move\n");
-
+    if (n % 2 == 0) {
+      printf("White to move\n");
+     } else {
+      printf("Black to move\n");
+     }
         if (!fgets(input, sizeof(input), stdin)) {
             break;
         }
@@ -78,13 +84,13 @@ int main() {
         if (strcmp(input, "undo") == 0) {
              //added undo redo functionality Here directly
              if (n==0) continue;
-            undo(board, moves[n - 1], whitekingpos, blackkingpos);
+            undo(board, moves[n - 1], whitekingpos, blackkingpos, dead);
             n--;
             boardprint(board);
             continue;
         }
         if (strcmp(input, "redo") == 0) {
-            redo(board, moves[n], whitekingpos, blackkingpos);
+            redo(board, moves[n], whitekingpos, blackkingpos, dead);
             n++;
             boardprint(board);
             continue;
@@ -136,6 +142,7 @@ int main() {
 
                 }
                 boardprint(board);
+                print_dead(dead);  
                 w=endgamecheck(whitekingpos,board);
                 b=endgamecheck(blackkingpos,board);
 

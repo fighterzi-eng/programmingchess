@@ -3,8 +3,10 @@
 #include"pieces.h"
 #include"utility.h"
 #include"undo.h"
+extern int deadn;
 int endgamecheck(int*kingpos,char**board);
 int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos);
 void moving(move *m, char **board, char *dead);
 char check_promotion(char piece, int y2);
+void print_dead(const char *dead);
 #endif

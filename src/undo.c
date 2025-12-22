@@ -1,5 +1,6 @@
 #include"include/undo.h"
 #include"include/utility.h"
+#include "include/rules.h"
 /*typedef struct 
 {
     int x1;
@@ -14,7 +15,7 @@
 
 move moves[1024];
 //this doesnt need compensation for promotion
-void undo(char **board, move m, int *whitekingpos, int *blackkingpos) {
+void undo(char **board, move m, int *whitekingpos, int *blackkingpos, char *dead) {
     board[m.y1][m.x1] = m.p1;
     board[m.y2][m.x2] = m.p2;
     // Undo rook
@@ -32,9 +33,13 @@ void undo(char **board, move m, int *whitekingpos, int *blackkingpos) {
     whitekingpos[1] = m.wky_before;
     blackkingpos[0] = m.bkx_before;
     blackkingpos[1] = m.bky_before;
+
+    if (m.ep_captured_p != '\0' || (m.p2 != '.' && m.p2 != '-')) {
+    deadn--;
+}
 }
 
-void redo(char **board, move m, int whitekingpos[2], int blackkingpos[2]) {
+void redo(char **board, move m, int whitekingpos[2], int blackkingpos[2], char *dead) {
     char empty_from = ((m.y1 + m.x1) % 2 == 0) ? '-' : '.';
     board[m.y1][m.x1] = empty_from;
     char ch = (m.promotion != '0') ? m.promotion : m.p1;
@@ -50,6 +55,13 @@ void redo(char **board, move m, int whitekingpos[2], int blackkingpos[2]) {
         char empty_cap = ((m.y1 + m.x2) % 2 == 0) ? '-' : '.';
         board[m.y1][m.x2] = empty_cap;
     }
+    if (m.ep_captured_p != '\0') {
+    deadn++;
+    dead[deadn] = m.ep_captured_p;
+    } else if (m.p2 != '.' && m.p2 != '-') {
+    deadn++;
+    dead[deadn] = m.p2;
+}
     // Kingpos update...
     if (isupper(m.p1)) { // Black piece
         blackkingpos[0] = m.x2;
