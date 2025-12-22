@@ -23,6 +23,37 @@ int endgamecheck(int*kingpos,char**board){
   if (inCheck(kx,ky,board)==1) return 1;//means checkmate
   else return 2;//means stale mate
 }
+
+int deadn = 0;          /* no longer static – we want to read it */
+int char_cmp(const void *a, const void *b) {
+    return *(const char *)a - *(const char *)b;
+}
+/*-----------  print dead material  -----------*/
+void print_dead(const char *dead)
+{
+    int wn = 0, bn = 0;
+    char white[32] = {0}, black[32] = {0};
+
+    for (int i = 1; i <= deadn; ++i) {
+        char p = dead[i];
+        if (islower(p))            /* white piece died – impossible but keep */
+            white[wn++] = (char)toupper(p);
+        else                       /* black piece died */
+            black[bn++] = p;
+    }
+
+qsort(white, wn, sizeof(char), char_cmp);
+qsort(black, bn, sizeof(char), char_cmp);
+
+    printf("Dead pieces  White: ");
+    if (wn) printf("%.*s", wn, white);
+    else    printf("(none)");
+
+    printf("   Black: ");
+    if (bn) printf("%.*s", bn, black);
+    else    printf("(none)");
+    puts("");
+}
 int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
   char piece=board[y1][x1];
   piece=toupper(piece);
@@ -120,7 +151,7 @@ char check_promotion(char piece, int y2) {
     return '0';
 }
 void moving(move *m, char **board, char *dead) {
-    static int deadn = 0;
+   
     m->p2 = board[m->y2][m->x2];  // Save to sq (empty for ep/castle)
 
     // CASTLE? (Detect and slide rook—flags not touched yet!)
