@@ -81,6 +81,7 @@ void addmove(int x1,int y1,char p1,int x2,int y2,char p2,int n,char promotion){ 
     moves[n].rook_x1 = 0; moves[n].rook_x2 = 0;
     moves[n].r_p1 = '\0';
     moves[n].ep_captured_p = '\0';
+    moves[n].n=n;
 }
 //n is the same as the number of turns and its taken by reference to avoid logical errors when redoing again
 /*void rumode(char **board,int *n){

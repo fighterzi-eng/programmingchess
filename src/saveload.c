@@ -1,23 +1,22 @@
 #include <include/utility.h>
 //#include "include/undo.h"
-//#include "include/rules.h"
+#include "include/rules.h"
 #include "include/saveload.h"
+#include"include/undo.h"
+void save_game( char *filename, move *moves, int n)
+{
+    FILE *f = fopen(filename, "wb");
+    if (!f) {
+        printf("Failed to save game\n");
+    }
 
-//you dont need to use a binary file just make a test file and copy the board to it 
-// void save_game( char *filename, move *moves, int n)
-// {
-//     FILE *f = fopen(filename, "wb");
-//     if (!f) {
-//         printf("Failed to save game\n");
-//     }
+    fwrite(&n, sizeof(int), 1, f);          // number of moves
+    fwrite(moves, sizeof(move), n, f);      // all moves
 
-//     fwrite(&n, sizeof(int), 1, f);          // number of moves
-//     fwrite(moves, sizeof(move), n, f);      // all moves
-
-//     fclose(f);
-//     printf("Game saved successfully\n");
-// }
-// //we dont acually need this we will just call board maker
+    fclose(f);
+    printf("Game saved successfully\n");
+}
+//we dont acually need this we will just call board maker
 // void boardreset(char **board)
 // {
 //     // clear board pattern
@@ -37,34 +36,30 @@
 //     }
 // }
 // //there is a problem
-// int load_game( char *filename,
-//               char **board,
-//               move *moves,int *n,int *whiteKingPos,int *blackKingPos){
-//     FILE *f = fopen(filename, "rb");
-//     if (!f) {
-//         printf("Failed to load game\n");
-//         return 1;
-//     }
+int load_game( char *filename,
+              char **board,
+              move *moves,int *n,int *whiteKingPos,int *blackKingPos,char*dead){
+    FILE *f = fopen(filename, "rb");
+    if (!f) {
+        printf("Failed to load game\n");
+        return 1;
+    }
 
-//     fread(n, sizeof(int), 1, f);
-//     fread(moves, sizeof(move), *n, f);
-//     fclose(f);
+    fread(n, sizeof(int), 1, f);
+    fread(moves, sizeof(move), *n, f);
+    fclose(f);
+    whiteKingPos[0] = 5; whiteKingPos[1] = 8;
+    blackKingPos[0] = 5; blackKingPos[1] = 1;
 
-//     // Reset board to initial position
-//     boardreset(board);   // IMPORTANT: you need this function
+    // Replay moves
+    for (int i = 0; i < *n; i++) {
+        redo(board, moves[i], whiteKingPos, blackKingPos,dead);
+    }
+    
 
-//     // Initial king positions
-//     whiteKingPos[0] = 5; whiteKingPos[1] = 8;
-//     blackKingPos[0] = 5; blackKingPos[1] = 1;
-
-//     // Replay moves
-//     for (int i = 0; i < *n; i++) {
-//         redo(board, moves[i], whiteKingPos, blackKingPos);
-//     }
-
-//     printf("Game loaded successfully\n");
-//     return 0;
-// }
+    printf("Game loaded successfully\n");
+    return 0;
+}
 void save_gametxt( char *filename, char**board)
 {
     FILE *f = fopen(filename, "w+");
