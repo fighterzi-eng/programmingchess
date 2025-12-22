@@ -92,6 +92,11 @@ int king(int x1, int y1, int x2, int y2, char **board) {
       bool *qs_right = is_white ? &wk_castle_qs : &bk_castle_qs;
       if (kingside && !*ks_right) return 1;
       if (!kingside && !*qs_right) return 1;
+
+      // Cannot castle if currently in check
+      if (abs(x2 - x1) == 2 && (inCheck(x1, y1, board))) {
+       return 1;
+}
      
 
         // Path clear (hardcoded: KS f/g, QS b/c/d)

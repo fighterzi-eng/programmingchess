@@ -64,36 +64,49 @@ int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
   
   //this part check if the king is in danger after the move ,i took abit from your king function underneath
   if (validity==0){
-  char savedFrom = board[y1][x1];
-  char savedTo   = board[y2][x2];
+// Post-pattern validation: sim move & check king safety
+if (validity == 0) {
+    char savedFrom = board[y1][x1];
+    char savedTo = board[y2][x2];
 
-  board[y2][x2] = board[y1][x1];
-  board[y1][x1] = '.';
-  // EP sim remove captured
-char saved_cap = ' ';
-bool doing_ep = (abs(x2-x1)==1 && EMPTY(savedTo) && tolower(piece)=='p' &&
-                 ((islower(board[y1][x1]) && board[y1][x2]=='P') ||
-                  (isupper(board[y1][x1]) && board[y1][x2]=='p')));
-if (doing_ep) {
-    saved_cap = board[y1][x2];
-    board[y1][x2] = '.';
+    // Update king pos for KING moves (before sim)
+    int check_kx = kx;
+    int check_ky = ky;
+    if (piece == 'K') {
+        check_kx = x2;
+        check_ky = y2;
+    }
+
+    // Sim move
+    board[y2][x2] = savedFrom;
+    board[y1][x1] = '.';
+
+    // EP sim: remove captured pawn if applicable
+    char saved_cap = ' ';
+    bool doing_ep = (abs(x2 - x1) == 1 && EMPTY(savedTo) && tolower(savedFrom) == 'p' &&
+                     ((islower(savedFrom) && board[y1][x2] == 'P') ||
+                      (isupper(savedFrom) && board[y1][x2] == 'p')));
+    if (doing_ep) {
+        saved_cap = board[y1][x2];
+        board[y1][x2] = '.';
+    }
+
+    int illegal = inCheck(check_kx, check_ky, board);
+
+    // Undo sim
+    board[y1][x1] = savedFrom;
+    board[y2][x2] = savedTo;
+    if (doing_ep) {
+        board[y1][x2] = saved_cap;
+    }
+
+    if (illegal) {
+        validity = 1;  // Invalid: leaves king in check
+    }
 }
-int illegal = inCheck(kx, ky, board);
-// Undo
-board[y1][x1] = savedFrom;
-board[y2][x2] = savedTo;
-if (doing_ep) board[y1][x2] = saved_cap;
-if (illegal) return 1;
 
-    // Check if king would be in check
-   illegal = inCheck(kx, ky, board);
-
-    // --- undo move ---
-  board[y1][x1] = savedFrom;
-  board[y2][x2] = savedTo;
-
-  if (illegal) return 1;
-  return validity;}
+return validity;
+  }
   return validity;
 }
 char check_promotion(char piece, int y2) {

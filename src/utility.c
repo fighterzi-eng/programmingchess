@@ -34,20 +34,13 @@ char** boardmaker(int *whitekingpos, int *blackkingpos) { //updated to include p
         for (int x = 1; x < 9; x++)
             board[y][x] = ((y + x) % 2 == 0) ? '-' : '.';
 
-// Black pieces (top, rank 8)
-char blackBack[] = "RNBQKBNR";
-for (int i = 0; i < 8; i++) {
-    board[8][i+1] = blackBack[i];
-    board[7][i+1] = 'P';
-}
-
-// White pieces (bottom, rank 1)
 char whiteBack[] = "rnbqkbnr";
 for (int i = 0; i < 8; i++) {
-    board[1][i+1] = whiteBack[i];
-    board[2][i+1] = 'p';
+    board[8][i+1] = whiteBack[i];  // white back at y=8 (bottom, rank 1)
+    board[7][i+1] = 'p';  // white pawns at y=7 (rank 2)
+    board[1][i+1] = toupper(whiteBack[i]);  // black back at y=1 (top, rank 8)
+    board[2][i+1] = 'P';  // black pawns at y=2 (rank 7)
 }
-
        // Set king positions automatically
     if (whitekingpos != NULL) {
         whitekingpos[0] = 5; // x
@@ -152,7 +145,7 @@ if (whiteKing) {  // White king, check for black 'P' above (ky-1)
     return 0;
 }
 void boardprint(char**board){
-    for(int i=10;i>0;i--){
+    for(int i=0;i<10;i++){
         for(int j=0;j<10;j++){
             printf(" %c",board[i][j]);
 
