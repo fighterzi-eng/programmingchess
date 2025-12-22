@@ -43,7 +43,7 @@ int main() {
     ep_target_y = 0;
 
     updateKingPositions(board, whitekingpos, blackkingpos);
-    boardprint(board);
+    boardprintWH(board);
 
     memset(moves, 0, sizeof(moves));
 
@@ -86,13 +86,17 @@ int main() {
              if (n==0) continue;
             undo(board, moves[n - 1], whitekingpos, blackkingpos, dead);
             n--;
-            boardprint(board);
+            if(n%2==0)
+            boardprintWH(board);
+            else boardprintBL(board);
             continue;
         }
         if (strcmp(input, "redo") == 0) {
             redo(board, moves[n], whitekingpos, blackkingpos, dead);
             n++;
-            boardprint(board);
+            if(n%2==0)
+            boardprintWH(board);
+            else boardprintBL(board);
             continue;
         }
         if (parseMove(input, &x1, &y1, &x2, &y2)) {
@@ -141,15 +145,17 @@ int main() {
                     n++;
 
                 }
-                boardprint(board);
+            if(n%2==0)
+            boardprintWH(board);
+            else boardprintBL(board);
                 print_dead(dead);  
                 w=endgamecheck(whitekingpos,board);
                 b=endgamecheck(blackkingpos,board);
 
     }
-    if(w==2||b==2) printf("game over the result is a draw");
-    else if(w==1) printf("game over the result is black wins");
-    else if(b==1) printf("game over the result is white wins");
+    if(w==2||b==2) printf("Stalemate The game is a draw");
+    else if(w==1) printf("Checkmate black wins");
+    else if(b==1) printf("Checkmate white wins");
    for (int i = 0; i < 10; i++)
     free(board[i]);
 free(board);

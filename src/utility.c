@@ -144,8 +144,17 @@ if (whiteKing) {  // White king, check for black 'P' above (ky-1)
 // if every thing ok returns safe
     return 0;
 }
-void boardprint(char**board){
+void boardprintWH(char**board){
     for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            printf(" %c",board[i][j]);
+
+        }
+        printf("\n");
+    }
+}
+void boardprintBL(char**board){
+    for(int i=9;i>=0;i--){
         for(int j=0;j<10;j++){
             printf(" %c",board[i][j]);
 

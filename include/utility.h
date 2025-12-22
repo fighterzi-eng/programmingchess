@@ -21,7 +21,8 @@ extern bool bk_castle_qs;//castle rights
 char** boardmaker(int *whitekingpos, int *blackkingpos);
 int inside(int x, int y);
 int inCheck(int kx, int ky, char **board);
-void boardprint(char**board);
+void boardprintWH(char**board);
+void boardprintBL(char**board);
 int parseMove(char *move, int *x1, int *y1, int *x2, int *y2);
 void updateKingPositions(char **board, int *whitekingpos, int *blackkingpos);//updating king positions after loading
 //int checkdanger(int x,int y,char**board);
