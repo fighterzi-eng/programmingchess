@@ -43,12 +43,13 @@ int main() {
     memset(moves, 0, sizeof(moves));
 
     int w = 0, b = 0;
+      printf("\nenter your move in format ex: (e2e4):\n");
+      printf("enter 'undo' to undo last move or 'redo' to redo last undone move you can also write'save' to save\n");
 
     /* -------- Main game loop -------- */
     while (w == 0 && b == 0) {
 
-        printf("\nenter your move in format ex: (e2e4):\n");
-        printf("enter 'undo' to undo last move or 'redo' to redo last undone move\n");
+      
     if (n % 2 == 0) {
       printf("White to move\n");
      } else {
@@ -97,7 +98,6 @@ int main() {
         if (parseMove(input, &x1, &y1, &x2, &y2)) {
             printf("Bad move format\n");
         } else {
-            printf("From (%d,%d) to (%d,%d)\n", x1, y1, x2, y2);
         }
                 //0 is whte black is 1
                 if(n%2==0){
