@@ -8,6 +8,7 @@ typedef struct {
     int rook_x1, rook_x2;
     char r_p1;
     char ep_captured_p;
+    int n;
 } move;
 
 extern move moves[1024];

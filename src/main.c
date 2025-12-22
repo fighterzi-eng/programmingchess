@@ -9,23 +9,17 @@ bool bk_castle_ks = true, bk_castle_qs = true;//castle rights
 
 int main() {
     int n = 0;
-
     char dead[32];
     memset(dead, 0, sizeof(dead));
     char menu[8];        // <-- NEW: menu input buffer
     char input[32];      // <-- move input buffer
-
     int x1, y1, x2, y2;
     char op;
-
     int blackkingpos[2];
     int whitekingpos[2];
-
     char **board = boardmaker(whitekingpos, blackkingpos);
-
     /* -------- Menu input -------- */
     printf("enter l to load game or anything else to start a new game\n");
-
     if (!fgets(menu, sizeof(menu), stdin)) {
         printf("input error\n");
         return 1;
@@ -34,8 +28,9 @@ int main() {
     op = menu[0];
 
     if (op == 'l') {
-        load("empty.txt", board);
-        deadn = 0; memset(dead, 0, sizeof(dead));
+        int x=load_game("save.bin", board,moves,&n,whitekingpos,blackkingpos,dead);
+        deadn = 0; 
+        memset(dead, 0, sizeof(dead));
     }
 
     /* -------- Game initialization -------- */
@@ -48,12 +43,15 @@ int main() {
     memset(moves, 0, sizeof(moves));
 
     int w = 0, b = 0;
+      printf("\nenter your move in format ex: (e2e4):\n");
+      printf("enter 'undo' to undo last move or 'redo' to redo last undone move you can also write'save' to save\n");
 
     /* -------- Main game loop -------- */
     while (w == 0 && b == 0) {
+        if(inCheck(blackkingpos[0],blackkingpos[1],board)==1) printf("black is checked");
+        if(inCheck(whitekingpos[0],whitekingpos[1],board)==1) printf("black is checked");
 
-        printf("\nenter your move in format ex: (e2e4):\n");
-        printf("enter 'undo' to undo last move or 'redo' to redo last undone move\n");
+      
     if (n % 2 == 0) {
       printf("White to move\n");
      } else {
@@ -74,7 +72,7 @@ int main() {
         }
     
         if (strcmp(input, "save") == 0) {
-            save_gametxt("empty.txt", board);
+            save_game("save.bin", moves,n);
             continue;
         }
 
@@ -102,7 +100,6 @@ int main() {
         if (parseMove(input, &x1, &y1, &x2, &y2)) {
             printf("Bad move format\n");
         } else {
-            printf("From (%d,%d) to (%d,%d)\n", x1, y1, x2, y2);
         }
                 //0 is whte black is 1
                 if(n%2==0){
@@ -156,9 +153,12 @@ int main() {
     if(w==2||b==2) printf("Stalemate The game is a draw");
     else if(w==1) printf("Checkmate black wins");
     else if(b==1) printf("Checkmate white wins");
+    printf("\n");
    for (int i = 0; i < 10; i++)
     free(board[i]);
 free(board);
+printf("by john bassem and justin jimmy\n");
+printf("thank you for playing\n");
 
     return 0;
 }

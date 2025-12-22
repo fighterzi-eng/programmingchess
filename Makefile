@@ -7,7 +7,7 @@ utility.o:
 undo.o:
 	gcc -c -I./ ./src/undo.c -o ./bin/undo.o
 
-saveload.o:
+saveload.o: undo.o
 	gcc -c -I./ ./src/saveload.c -o ./bin/saveload.o
 
 pieces.o: utility.o
