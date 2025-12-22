@@ -48,6 +48,8 @@ int main() {
 
     /* -------- Main game loop -------- */
     while (w == 0 && b == 0) {
+        if(inCheck(blackkingpos[0],blackkingpos[1],board)==1) printf("black is checked");
+        if(inCheck(whitekingpos[0],whitekingpos[1],board)==1) printf("black is checked");
 
       
     if (n % 2 == 0) {
