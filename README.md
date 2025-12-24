@@ -1,17 +1,12 @@
-
-
 # Chess Game Implementation in C
 
 **Authors:** John Bassem, Justin Jimmy
 
-
 **Language:** C
-
 
 **Paradigm:** Procedural Programming
 
-
-**Platform:** Linux / GCC
+**Platform:** Windows/ Linux / GCC
 
 ---
 
@@ -19,52 +14,36 @@
 
 ### 1.1 Overview
 
-This application is a **fully playable chess game implemented in the C programming language**, designed to run in a terminal environment. The program simulates a real chess match between two players, enforcing all standard chess rules and providing additional quality-of-life features such as saving/loading games and undo/redo functionality.
+This application is a **fully playable chess game implemented in the C programming language**, designed for the terminal. It simulates a professional chess match by enforcing standard FIDE rules and provides a modern interface featuring move history navigation and binary state persistence.
 
-The game uses a **text-based board representation**, accepts algebraic-like move inputs (e.g., `e2e4`), and alternates turns automatically between White and Black.
+The program supports **dynamic board rotation**, ensuring the board is always printed from the perspective of the current player (White or Black).
 
 ---
 
 ### 1.2 Main Features
 
-The application provides the following features:
-
 #### Core Gameplay
 
-* Complete chess rules enforcement:
-
-  * Legal move validation for **all pieces**
-  * **Check**, **checkmate**, and **stalemate** detection
-* Turn-based play (White and Black)
-* Board printed from the current player’s perspective
+* **Complete Rule Enforcement**: Validates movement for all pieces including specialized logic for King safety.
+* **Game State Detection**: Automatic detection of **Check**, **Checkmate**, and **Stalemate**.
+* **Dynamic Perspective**: The board flips automatically based on whose turn it is.
 
 #### Advanced Chess Rules
 
-* **Castling** (king-side and queen-side)
-
-  * Correctly tracks castling rights
-  * Prevents castling through check or when king/rook has moved
-* **En Passant**
-
-  * Tracks en passant target square
-  * Correctly handles capture and undo/redo
-* **Pawn Promotion**
-
-  * User chooses promotion piece (`q`, `r`, `b`, `n`)
+* **Castling**: Handles King-side and Queen-side logic, verifying that the path is clear and no pieces are under attack.
+* **En Passant**: Tracks the double-pawn-push target square and handles the unique capture logic.
+* **Pawn Promotion**: Interactive selection of Queen, Rook, Bishop, or Knight when a pawn reaches the 8th rank.
 
 #### Game State Control
 
-* **Undo** last move
-* **Redo** undone moves
-* **Save** game state to a binary file
-* **Load** a previously saved game
-* Keeps track of **captured (dead) pieces**
+* **Undo/Redo System**: A full stack-based system to navigate back and forth through the match.
+* **Binary Save/Load**: Allows players to save their progress to a `.bin` file and resume later with the full undo history intact.
+* **Captured Material**: Visual tracking of "dead" pieces for both players.
 
 #### User Interface
 
-* Clear prompts and instructions
-* Error messages for invalid moves
-* Displays captured pieces for both sides
+* **Graphics Toggle**: Support for both **Unicode Fancy Graphics** (♔, ♞) and standard **ASCII** (k, n).
+* **Input Handling**: Robust parsing of algebraic notation (e.g., `e2e4`) and command strings.
 
 ---
 
@@ -72,30 +51,20 @@ The application provides the following features:
 
 ### 2.1 Design Philosophy
 
-The design emphasizes:
-
-* **Modularity**
-* **Separation of concerns**
-* **Explicit state tracking**
-
-Instead of relying on hidden state or implicit logic, all important aspects of the game (board, moves, king positions, castling rights, en passant target, captured pieces) are explicitly stored and updated.
+The architecture emphasizes **History-Based State**. Instead of storing only the current board, the system records a sequence of transformations. This ensures that the state can be perfectly reconstructed or reverted without loss of data or "ghost" logic errors.
 
 ---
 
 ### 2.2 Modular Structure
 
-The program is divided into logical modules, each responsible for a specific aspect of the game:
-
-| Module       | Responsibility                             |
-| ------------ | ------------------------------------------ |
-| `main.c`     | Game loop, user interaction, turn handling |
-| `utility.c`  | Board creation, printing, checks, helpers  |
-| `pieces.c`   | Piece-specific movement validation         |
-| `rules.c`    | Game rules, checkmate/stalemate logic      |
-| `undo.c`     | Move history, undo/redo system             |
-| `saveload.c` | Binary save/load functionality             |
-
-Each `.c` file has a corresponding `.h` file defining its interface.
+| Module | Responsibility |
+| --- | --- |
+| `main.c` | Entry point, game loop, menu management, and turn-based logic. |
+| `utility.c` | Board initialization, coordinate mapping, and perspective-aware printing. |
+| `pieces.c` | Specific legal movement patterns for each unique chess piece. |
+| `rules.c` | High-level validation (Check/Checkmate), move simulation, and capture logic. |
+| `undo.c` | Stack management for move history and state restoration. |
+| `saveload.c` | Binary File I/O for persistent storage of the move history. |
 
 ---
 
@@ -103,196 +72,79 @@ Each `.c` file has a corresponding `.h` file defining its interface.
 
 ### 3.1 Board Representation
 
-* The chessboard is stored as a **10×10 dynamically allocated array**
+* The board is a **10x10 dynamically allocated array**.
+* Indices `1..8` are the active squares.
+* Outer indices provide coordinate labels (`a-h`, `1-8`).
 
-  * Indices `1..8` represent playable squares
-  * Outer border used for labels (`a–h`, `1–8`)
-* Empty squares are represented using:
 
-  * `.` or `-` (to preserve checkerboard pattern)
+* Empty squares use `.` and `-` to maintain a visual checkerboard pattern in the terminal.
 
 ### 3.2 Piece Representation
 
-* **Lowercase letters** → White pieces
-* **Uppercase letters** → Black pieces
-
-| Piece  | White | Black |
-| ------ | ----- | ----- |
-| King   | `k`   | `K`   |
-| Queen  | `q`   | `Q`   |
-| Rook   | `r`   | `R`   |
-| Bishop | `b`   | `B`   |
-| Knight | `n`   | `N`   |
-| Pawn   | `p`   | `P`   |
+* **Lowercase** = White pieces | **Uppercase** = Black pieces.
+* Supports Unicode characters if the terminal and user settings allow.
 
 ### 3.3 Input Format
 
-* Moves must be entered in the format:
-
-  ```
-  e2e4
-  ```
-* Commands:
-
-  * `undo`
-  * `redo`
-  * `save`
-  * `exit`
-
-Invalid input is rejected safely without crashing the program.
+* **Moves**: Entered as source-destination pairs (e.g., `g1f3`).
+* **Menu**: Users select from `Start`, `Load`, or `Exit` at the beginning of the program.
 
 ---
 
 ## 4. Data Structures Used
 
-### 4.1 Board
-
-```c
-char **board;
-```
-
-* Dynamically allocated 2D array
-* Stores pieces, empty squares, and board labels
-
----
-
-### 4.2 Move Structure
+### 4.1 Move Structure
 
 ```c
 typedef struct {
-    int x1, y1;
-    char p1;
-    int x2, y2;
-    char p2;
-
-    int rook_x1, rook_x2;
-    char r_p1;
-
-    char ep_captured_p;
-    char promotion;
-
-    int wkx_before, wky_before;
-    int bkx_before, bky_before;
-
-    int n;
+    int x1, y1, x2, y2;
+    char p1, p2;           // Source piece and destination (capture)
+    int rook_x1, rook_x2;  // For castling rook movement
+    char r_p1;             // Rook piece type
+    char ep_captured_p;    // En Passant target piece
+    char promotion;        // Promotion piece selection
+    int wkx_before, wky_before, bkx_before, bky_before; // King positions
+    bool wk_ks, wk_qs, bk_ks, bk_qs; // Castling rights snapshot
+    int ep_tx, ep_ty;      // En Passant target square snapshot
+    int n;                 // Move sequence number
 } move;
+
 ```
-
-This structure fully captures **everything required to undo and redo a move**, including:
-
-* Captures
-* Castling rook movement
-* En passant
-* Promotion
-* King positions before the move
 
 ---
 
-### 4.3 Move History
+### 4.2 Global State Variables
 
-```c
-move moves[1024];
-```
-
-* Acts as a **stack**
-* Index `n` represents the current move number
-
----
-
-### 4.4 Global State Variables
-
-```c
-int ep_target_x, ep_target_y;
-bool wk_castle_ks, wk_castle_qs;
-bool bk_castle_ks, bk_castle_qs;
-int deadn;
-```
-
-These track:
-
-* En passant square
-* Castling rights
-* Number of captured pieces
+* `move moves[1024]`: The stack containing every move played in the session.
+* `char dead[32]`: A buffer storing all captured pieces.
+* `bool use_fancy_graphics`: Toggle for Unicode vs ASCII output.
 
 ---
 
 ## 5. Important Functions and Modules
 
-### 5.1 `main.c`
+### 5.1 `movevalidator()`
 
-* Initializes the game
-* Handles user input
-* Controls turn order
-* Calls move validation, execution, undo/redo
-* Checks for game termination
+This is the core engine function. It works in two phases:
 
----
+1. **Geometric Check**: Calls functions in `pieces.c` to see if the move follows piece rules.
+2. **King Safety**: Simulates the move on the board and calls `inCheck()`. If the player's king is left in danger, the move is invalidated and the board is reverted.
 
-### 5.2 `movevalidator()`
+### 5.2 `inCheck()`
 
-Validates a move by:
+Determines if a king is under attack. It is optimized to scan outwards from the king’s current coordinate in rays (for Sliders) and specific offsets (for Knights/Pawns) to identify threats.
 
-1. Checking piece movement rules
-2. Simulating the move
-3. Verifying the king is not left in check
-4. Reverting the simulation
-5. returning wether the move is valid or not
+### 5.3 `endgamecheck()`
 
-This ensures **no illegal move can be played**, even if it appears valid locally(ex.the king is in danger but there is nothing else the can stop the rook.
+Determines the status of the game:
 
----
+* **0**: Play continues.
+* **1**: Checkmate (King is in check and no legal moves exist).
+* **2**: Stalemate (King is safe but no legal moves exist).
 
-### 5.3 `inCheck()`
+### 5.4 Save / Load (Binary)
 
-Determines whether a king is under attack by:
-
-* Rooks / Queens (straight lines)
-* Bishops / Queens (diagonals)
-* Knights
-* Pawns
-* Opposing king
-
-Highly optimized compared to brute-force checking.
-
----
-
-### 5.4 `endgamecheck()`
-
-Determines:
-
-* Normal play
-* Checkmate
-* Stalemate
-
-Logic:
-
-* If any legal move exists → game continues
-* it checks by checking every square for every piece and returns 0 if it found any possible move else returns 1 or 2
-* If none exist:
-
-  * King in check → Checkmate
-  * King safe → Stalemate
-
----
-
-### 5.5 Undo / Redo System
-
-* **Undo:** Restores board, king positions, captures, castling, EP
-* **Redo:** Reapplies move exactly as before
-
-This is achieved by storing **complete move metadata**, not recomputing state.
-every move is stored in a struct containing all flags, point 1 and 2 and promotion.
-undo and redo work by moving through this stack of moves going back and forth
-
----
-
-### 5.6 Save / Load
-
-* Saves number of moves and move struct array to a **binary file**
-* Reloading replays moves from the initial board
-* Guarantees consistency without saving the board itself
-* loading also reinnializes the flags from the last moves
-* since its loaded from the move struct ,the user still has access to the redo and undo even after closing the game and loading
+The system saves the entire `moves` array and the move count `n`. When loading, the program initializes a fresh board and **replays** the history. This ensures the player can still `undo` moves that occurred before the game was saved.
 
 ---
 
@@ -300,55 +152,23 @@ undo and redo work by moving through this stack of moves going back and forth
 
 ### 6.1 Starting the Game
 
-Run the program:
+1. Run `./chess`.
+2. Select graphics mode: `y` for Unicode (Fancy), `n` for ASCII.
+3. Choose `Start` for a new game or `Load` to open a `.bin` file.
 
-```bash
-./chess
-```
+### 6.2 Gameplay Commands
 
-You will be prompted:
+| Command | Result |
+| --- | --- |
+| `e2e4` | Standard move input. |
+| `undo` | Reverts the last move. |
+| `redo` | Restores a previously undone move. |
+| `save` | Prompts for a filename to save the binary state. |
+| `load` | Prompts for a filename to load the binary state. |
+| `exit` | Terminates the program. |
 
-```
-enter l to load game or anything else to start a new game
-```
+### 6.3 Special Rules Handling
 
----
-
-### 6.2 Making Moves
-
-Enter moves in this format:
-
-```
-e2e4
-```
-
----
-
-### 6.3 Commands
-
-| Command | Action                |
-| ------- | --------------------- |
-| `undo`  | Undo last move        |
-| `redo`  | Redo last undone move |
-| `save`  | Save game to file     |
-| `exit`  | Exit the game         |
-
----
-
-### 6.4 Promotion
-
-When a pawn reaches the final rank:
-
-```
-Promote pawn to (q,r,b,n):
-```
-
----
-
-### 6.5 Game End
-
-* Checkmate message is displayed
-* Stalemate is declared correctly
-* Program terminates gracefully
-
----
+* **Promotion**: When a pawn reaches the opposite end, the user is prompted to enter `q`, `r`, `b`, or `n`.
+* **Castling**: Input the king's move (e.g., `e1g1`); the rook will move automatically.
+* **Dead Pieces**: All captured material is displayed below the board after every turn.
