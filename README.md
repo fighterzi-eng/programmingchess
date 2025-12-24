@@ -1,7 +1,4 @@
-# programmingchess
-Below is a **well-structured, detailed report** tailored specifically to **your chess-in-C project** as it currently stands. I’ve written it in an **academic / engineering-project style**, suitable for **submission, documentation, or grading**, while still reflecting *your actual implementation*, not an idealized one.
 
----
 
 # Chess Game Implementation in C
 
@@ -233,8 +230,9 @@ Validates a move by:
 2. Simulating the move
 3. Verifying the king is not left in check
 4. Reverting the simulation
+5. returning wether the move is valid or not
 
-This ensures **no illegal move can be played**, even if it appears valid locally.
+This ensures **no illegal move can be played**, even if it appears valid locally(ex.the king is in danger but there is nothing else the can stop the rook.
 
 ---
 
@@ -263,6 +261,7 @@ Determines:
 Logic:
 
 * If any legal move exists → game continues
+* it checks by checking every square for every piece and returns 0 if it found any possible move else returns 1 or 2
 * If none exist:
 
   * King in check → Checkmate
@@ -276,14 +275,18 @@ Logic:
 * **Redo:** Reapplies move exactly as before
 
 This is achieved by storing **complete move metadata**, not recomputing state.
+every move is stored in a struct containing all flags, point 1 and 2 and promotion.
+undo and redo work by moving through this stack of moves going back and forth
 
 ---
 
 ### 5.6 Save / Load
 
-* Saves number of moves and move list to a **binary file**
+* Saves number of moves and move struct array to a **binary file**
 * Reloading replays moves from the initial board
 * Guarantees consistency without saving the board itself
+* loading also reinnializes the flags from the last moves
+* since its loaded from the move struct ,the user still has access to the redo and undo even after closing the game and loading
 
 ---
 
