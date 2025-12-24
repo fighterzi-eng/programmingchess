@@ -18,20 +18,20 @@ int main() {
     int blackkingpos[2];
     int whitekingpos[2];
     char **board = boardmaker(whitekingpos, blackkingpos);
+    
+    
     /* -------- Menu input -------- */
-    printf("enter l to load game or anything else to start a new game\n");
-    if (!fgets(menu, sizeof(menu), stdin)) {
-        printf("input error\n");
-        return 1;
-    }
+    printf("Welcome to our Chess Game!\n");
+    printf("Type 'start' to begin a new game or 'load' to load a saved game: ");
+    fgets(input, sizeof(input), stdin);
+    input[strcspn(input, "\n")] = 0; // Remove newline
+if (strcmp(input, "load") == 0) {
+       load_game_bin(board, &n, whitekingpos, blackkingpos, dead);
 
-    op = menu[0];
-
-    if (op == 'l') {
-        int x=load_game("save.bin", board,moves,&n,whitekingpos,blackkingpos,dead);
-        deadn = 0; 
-        memset(dead, 0, sizeof(dead));
-    }
+        if(n%2==0)
+            boardprintWH(board);
+            else boardprintBL(board);
+            }
 
     /* -------- Game initialization -------- */
     ep_target_x = 0;
@@ -46,39 +46,36 @@ int main() {
       printf("\nenter your move in format ex: (e2e4):\n");
       printf("enter 'undo' to undo last move or 'redo' to redo last undone move you can also write'save' to save\n");
 
-    /* -------- Main game loop -------- */
-    while (w == 0 && b == 0) {
-        if(inCheck(blackkingpos[0],blackkingpos[1],board)==1) printf("black is checked");
-        if(inCheck(whitekingpos[0],whitekingpos[1],board)==1) printf("black is checked");
 
-      
-    if (n % 2 == 0) {
-      printf("White to move\n");
-     } else {
-      printf("Black to move\n");
-     }
-        if (!fgets(input, sizeof(input), stdin)) {
-            break;
-        }
+          /* -------- Main game loop -------- */
+while (w == 0 && b == 0) {
+    if(inCheck(blackkingpos[0], blackkingpos[1], board) == 1) printf("Black is in check! \n");
+    if(inCheck(whitekingpos[0], whitekingpos[1], board) == 1) printf("White is in check! \n");
 
-        /* Strip newline */
-        input[strcspn(input, "\n")] = '\0';
+    if (n % 2 == 0) printf("White to move\n");
+    else printf("Black to move\n");
 
-        if (n!=0){
-            moves[n].wkx_before = whitekingpos[0]; //saving king positions before the move
-            moves[n].wky_before = whitekingpos[1];
-            moves[n].bkx_before = blackkingpos[0];
-            moves[n].bky_before = blackkingpos[1];
-        }
-    
-        if (strcmp(input, "save") == 0) {
-            save_game("save.bin", moves,n);
-            continue;
-        }
+    if (!fgets(input, sizeof(input), stdin)) break;
+    input[strcspn(input, "\n")] = '\0';
 
-        if (strcmp(input, "exit") == 0) break;
+    // 1. CHECK COMMANDS FIRST before saving "before" positions
+    if (strcmp(input, "save") == 0) {
+        save_game_bin(n);
+        while (getchar() != '\n'){
 
-        //we need to think a bit about how the undo redo bec if we excedded the original n we will get unexpected results
+        }; // CLEAR THE SCANF BUFFER
+        continue;
+    } 
+    else if (strcmp(input, "load") == 0) {
+        load_game_bin(board, &n, whitekingpos, blackkingpos, dead);
+        while (getchar() != '\n'){
+
+        }; // CLEAR THE SCANF BUFFER
+        if(n % 2 == 0) boardprintWH(board);
+        else boardprintBL(board);
+        continue;
+    }
+          //we need to think a bit about how the undo redo bec if we excedded the original n we will get unexpected results *unlickily to reach move 1024*
         if (strcmp(input, "undo") == 0) {
              //added undo redo functionality Here directly
              if (n==0) continue;
@@ -97,7 +94,7 @@ int main() {
             else boardprintBL(board);
             continue;
         }
-        if (parseMove(input, &x1, &y1, &x2, &y2)) {
+       else if (parseMove(input, &x1, &y1, &x2, &y2)) {
             printf("Bad move format\n");
         } else {
         }
@@ -111,7 +108,7 @@ int main() {
                         continue;
                     }
                     char prom=check_promotion(board[y1][x1],y2);
-                    addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom);
+                    addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom,whitekingpos,blackkingpos);
                     if(board[y1][x1]=='k'){
                         moving(&moves[n],board,dead);
                         whitekingpos[0]=x2;
@@ -131,7 +128,7 @@ int main() {
                         continue;
                     }
                     char prom=check_promotion(board[y1][x1],y2);
-                    addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom);
+                    addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom,whitekingpos,blackkingpos);
                     if(board[y1][x1]=='K'){
                         moving(&moves[n],board,dead);
                         blackkingpos[0]=x2;
@@ -157,8 +154,8 @@ int main() {
    for (int i = 0; i < 10; i++)
     free(board[i]);
 free(board);
-printf("by john bassem and justin jimmy\n");
-printf("thank you for playing\n");
+printf("by John Bassem and Justin Jimmy\n");
+printf("Thank you for playing !\n");
 
     return 0;
 }
