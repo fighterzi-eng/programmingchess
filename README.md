@@ -3,8 +3,14 @@
 # Chess Game Implementation in C
 
 **Authors:** John Bassem, Justin Jimmy
+
+
 **Language:** C
+
+
 **Paradigm:** Procedural Programming
+
+
 **Platform:** Linux / GCC
 
 ---
