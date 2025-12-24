@@ -6,7 +6,7 @@
 int ep_target_x, ep_target_y;
 bool wk_castle_ks = true, wk_castle_qs = true;
 bool bk_castle_ks = true, bk_castle_qs = true;//castle rights
-
+bool use_fancy_graphics = true;
 int main() {
     int n = 0;
     char dead[32];
@@ -22,10 +22,28 @@ int main() {
     
     /* -------- Menu input -------- */
     printf("Welcome to our Chess Game!\n");
-    printf("Type 'start' to begin a new game or 'load' to load a saved game: ");
+
+    /* -------- Graphics Toggle -------- */
+    printf("Enable ASCII graphics? (y/n): ");
+    fgets(input, sizeof(input), stdin);
+    if (input[0] == 'n' || input[0] == 'N') {
+        use_fancy_graphics = false;
+    } else {
+        use_fancy_graphics = true;
+    }
+printf("---------------Menu---------------\n");
+printf("               Start               \n");
+printf("               Load                \n");
+printf("               Exit                \n");
+printf("----------------------------------\n");
     fgets(input, sizeof(input), stdin);
     input[strcspn(input, "\n")] = 0; // Remove newline
-if (strcmp(input, "load") == 0) {
+    if (strcmp(input, "exit") == 0||strcmp(input, "Exit") == 0) {
+        printf("\nMade by: John Bassem and Justin Jimmy \n");
+        printf("Thank you for playing!\n");
+        return 0;
+    }
+    if (strcmp(input, "load") == 0||strcmp(input, "Load") == 0) {
        load_game_bin(board, &n, whitekingpos, blackkingpos, dead);
 
         if(n%2==0)
@@ -43,8 +61,8 @@ if (strcmp(input, "load") == 0) {
     memset(moves, 0, sizeof(moves));
 
     int w = 0, b = 0;
-      printf("\nenter your move in format ex: (e2e4):\n");
-      printf("enter 'undo' to undo last move or 'redo' to redo last undone move you can also write'save' to save\n");
+      printf("\nEnter your move in format ex: (e2e4):\n");
+      printf("Enter 'undo' to undo last move or 'redo' to redo last undone move you can also write'save' to save\n");
 
 
           /* -------- Main game loop -------- */
@@ -52,21 +70,31 @@ while (w == 0 && b == 0) {
     if(inCheck(blackkingpos[0], blackkingpos[1], board) == 1) printf("Black is in check! \n");
     if(inCheck(whitekingpos[0], whitekingpos[1], board) == 1) printf("White is in check! \n");
 
-    if (n % 2 == 0) printf("White to move\n");
-    else printf("Black to move\n");
+    if (n % 2 == 0) {
+        printf("White to move\n");
+        printf("Enter your move: ");}
 
+    else {
+        printf("Black to move\n");
+        printf("Enter your move: ");
+    }
     if (!fgets(input, sizeof(input), stdin)) break;
     input[strcspn(input, "\n")] = '\0';
-
+    input[strcspn(input, "\n")] = 0; // Remove newline
+    if (strcmp(input, "exit") == 0||strcmp(input, "Exit") == 0) {
+        printf("\nMade by: John Bassem and Justin Jimmy \n");
+        printf("Thank you for playing!\n");
+        return 0;
+    }
     // 1. CHECK COMMANDS FIRST before saving "before" positions
-    if (strcmp(input, "save") == 0) {
+    if (strcmp(input, "save") == 0||strcmp(input, "Save") == 0) {
         save_game_bin(n);
         while (getchar() != '\n'){
 
         }; // CLEAR THE SCANF BUFFER
         continue;
     } 
-    else if (strcmp(input, "load") == 0) {
+    else if (strcmp(input, "load") == 0||strcmp(input, "Load") == 0) {
         load_game_bin(board, &n, whitekingpos, blackkingpos, dead);
         while (getchar() != '\n'){
 

@@ -17,7 +17,7 @@ extern bool wk_castle_ks;
 extern bool wk_castle_qs;
 extern bool bk_castle_ks;
 extern bool bk_castle_qs;//castle rights
-
+const char* getChessSymbol(char piece, int x, int y);
 char** boardmaker(int *whitekingpos, int *blackkingpos);
 int inside(int x, int y);
 int inCheck(int kx, int ky, char **board);
