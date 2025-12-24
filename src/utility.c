@@ -1,7 +1,11 @@
 #include"include/utility.h"
 #include"include/undo.h"
-
+#include <stdbool.h>
+#include <stdio.h>  
+#include <string.h>
+extern bool use_fancy_graphics;
 extern bool wk_castle_ks, wk_castle_qs, bk_castle_ks, bk_castle_qs;
+
 
 int inside(int x, int y) { //useful
     return (x >= 1 && x < 9 && y >= 1 && y < 9);
@@ -144,23 +148,51 @@ if (whiteKing) {  // White king, check for black 'P' above (ky-1)
 // if every thing ok returns safe
     return 0;
 }
-void boardprintWH(char**board){
-    for(int i=0;i<10;i++){
-        for(int j=0;j<10;j++){
-            printf(" %c",board[i][j]);
-
-        }
-        printf("\n");
+const char* getChessSymbol(char piece, int x, int y) {
+    // If toggle is off, return the character as a string
+    if (!use_fancy_graphics) {
+        static char buf[2] = {0};
+        buf[0] = piece;
+        return buf;
     }
+
+    // Otherwise, return the ASCII symbols
+    switch (piece) {
+        case 'K': return "♔"; case 'Q': return "♕"; case 'R': return "♖";
+        case 'B': return "♗"; case 'N': return "♘"; case 'P': return "♙";
+        case 'k': return "♚"; case 'q': return "♛"; case 'r': return "♜";
+        case 'b': return "♝"; case 'n': return "♞"; case 'p': return "♟";
+    }
+
+    return ((x + y) % 2 == 0) ? "■" : "□";
 }
-void boardprintBL(char**board){
-    for(int i=9;i>=0;i--){
-        for(int j=0;j<10;j++){
-            printf(" %c",board[i][j]);
-
+void boardprintWH(char** board) {
+    printf("\n    A B C D E F G H\n");
+    printf("  +-----------------+\n");
+    for (int y = 1; y <= 8; y++) {
+        printf("%d |", 9 - y);
+        for (int x = 1; x <= 8; x++) {
+            // Pass coordinates to determine square color if empty
+            printf(" %s", getChessSymbol(board[y][x], x, y));
         }
-        printf("\n");
+        printf(" | %d\n", 9 - y);
     }
+    printf("  +-----------------+\n");
+    printf("    A B C D E F G H\n\n");
+}
+
+void boardprintBL(char** board) {
+    printf("\n    A B C D E F G H\n");
+    printf("  +-----------------+\n");
+    for (int y = 8; y >= 1; y--) {
+        printf("%d |", 9 - y);
+        for (int x = 1; x <= 8; x++) {
+            printf(" %s", getChessSymbol(board[y][x], x, y));
+        }
+        printf(" | %d\n", 9 - y);
+    }
+    printf("  +-----------------+\n");
+    printf("    A B C D E F G H\n\n");
 }
 // added move parser
 

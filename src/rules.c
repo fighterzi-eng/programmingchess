@@ -34,25 +34,30 @@ void print_dead(const char *dead)
     int wn = 0, bn = 0;
     char white[32] = {0}, black[32] = {0};
 
+    // Sort dead pieces into White and Black piles
     for (int i = 1; i <= deadn; ++i) {
         char p = dead[i];
-        if (islower(p))            /* white piece died – impossible but keep */
-            white[wn++] = (char)toupper(p);
-        else                       /* black piece died */
-            black[bn++] = p;
+        if (islower(p)) white[wn++] = p;
+        else if (isupper(p)) black[bn++] = p;
     }
 
-qsort(white, wn, sizeof(char), char_cmp);
-qsort(black, bn, sizeof(char), char_cmp);
-
     printf("Dead pieces  White: ");
-    if (wn) printf("%.*s", wn, white);
-    else    printf("(none)");
+    if (wn == 0) printf("(none)");
+    else {
+        for (int i = 0; i < wn; ++i) {
+            // Use 0,0 for coordinates since square pattern doesn't matter here
+            printf("%s ", getChessSymbol(white[i], 0, 0));
+        }
+    }
 
     printf("   Black: ");
-    if (bn) printf("%.*s", bn, black);
-    else    printf("(none)");
-    puts("");
+    if (bn == 0) printf("(none)");
+    else {
+        for (int i = 0; i < bn; ++i) {
+            printf("%s ", getChessSymbol(black[i], 0, 0));
+        }
+    }
+    printf("\n");
 }
 int movevalidator(int x1,int y1,int x2,int y2,char**board,int*kingpos){
   char piece=board[y1][x1];
