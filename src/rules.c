@@ -150,6 +150,7 @@ char check_promotion(char piece, int y2) {
         char new_piece;
         printf("Promote pawn to (q,r,b,n): ");
         scanf(" %c", &new_piece);
+        clear_buffer();  // CONSUMES the leftover Enter key
         if (piece == 'P') new_piece = toupper(new_piece);
         return new_piece;
     }

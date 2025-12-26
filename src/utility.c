@@ -5,7 +5,11 @@
 #include <string.h>
 extern bool use_fancy_graphics;
 extern bool wk_castle_ks, wk_castle_qs, bk_castle_ks, bk_castle_qs;
-
+//new
+void clear_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
 int inside(int x, int y) { //useful
     return (x >= 1 && x < 9 && y >= 1 && y < 9);

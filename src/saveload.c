@@ -8,7 +8,7 @@ extern bool wk_castle_ks, wk_castle_qs, bk_castle_ks, bk_castle_qs;
 extern int deadn;
 extern move moves[1024];
 
-void save_game_bin(int n) {
+void save_game_bin(int n, char *dead) {
     char filename[64];
     printf("Enter filename to save example: savefile.bin ");
     scanf("%s", filename);
@@ -17,6 +17,7 @@ void save_game_bin(int n) {
     if (!f) return;
 
     // Save state
+    fwrite(dead, sizeof(char), 32, f);
     fwrite(&n, sizeof(int), 1, f);
     fwrite(&deadn, sizeof(int), 1, f);
     fwrite(&wk_castle_ks, sizeof(bool), 1, f);
@@ -41,7 +42,8 @@ int load_game_bin(char **board, int *n, int *whitekingpos, int *blackkingpos, ch
         printf("Load failed!\n");
         return 0;
     }
-
+    extern char dead[32];
+    fread(dead, sizeof(char), 32, f);
     fread(n, sizeof(int), 1, f);
     fread(&deadn, sizeof(int), 1, f);
     fread(&wk_castle_ks, sizeof(bool), 1, f);

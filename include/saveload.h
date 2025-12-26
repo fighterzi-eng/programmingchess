@@ -10,6 +10,6 @@
 //void load(char*filename,char**board);
 //void save_game(char *filename, move *moves, int n);
 //int load_game(char *filename,char **board,move *moves,int *n,int *whiteKingPos,int *blackKingPos,char*dead);
-void save_game_bin(int n);
+void save_game_bin(int n, char *dead);
 int load_game_bin(char **board, int *n, int *whitekingpos, int *blackkingpos, char *dead);
 #endif
