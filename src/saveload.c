@@ -42,7 +42,6 @@ int load_game_bin(char **board, int *n, int *whitekingpos, int *blackkingpos, ch
         printf("Load failed!\n");
         return 0;
     }
-    extern char dead[32];
     fread(dead, sizeof(char), 32, f);
     fread(n, sizeof(int), 1, f);
     fread(&deadn, sizeof(int), 1, f);
