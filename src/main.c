@@ -7,6 +7,7 @@ int ep_target_x, ep_target_y;
 bool wk_castle_ks = true, wk_castle_qs = true;
 bool bk_castle_ks = true, bk_castle_qs = true;//castle rights
 bool use_fancy_graphics = true;
+int max_history = 0;
 int main() {
     int n = 0;
     char dead[32];
@@ -88,7 +89,7 @@ while (w == 0 && b == 0) {
     }
     // 1. CHECK COMMANDS FIRST before saving "before" positions
     if (strcmp(input, "save") == 0||strcmp(input, "Save") == 0) {
-        save_game_bin(n);
+        save_game_bin(n, dead);
         while (getchar() != '\n'){
 
         }; // CLEAR THE SCANF BUFFER
@@ -106,6 +107,7 @@ while (w == 0 && b == 0) {
           //we need to think a bit about how the undo redo bec if we excedded the original n we will get unexpected results *unlickily to reach move 1024*
         if (strcmp(input, "undo") == 0) {
              //added undo redo functionality Here directly
+
              if (n==0) continue;
             undo(board, moves[n - 1], whitekingpos, blackkingpos, dead);
             n--;
@@ -115,6 +117,10 @@ while (w == 0 && b == 0) {
             continue;
         }
         if (strcmp(input, "redo") == 0) {
+             if (n >= max_history) {
+             printf("Nothing to redo!\n");
+              continue;
+             }
             redo(board, moves[n], whitekingpos, blackkingpos, dead);
             n++;
             if(n%2==0)
@@ -124,6 +130,7 @@ while (w == 0 && b == 0) {
         }
        else if (parseMove(input, &x1, &y1, &x2, &y2)) {
             printf("Bad move format\n");
+            continue;
         } else {
         }
                 //0 is whte black is 1
@@ -135,16 +142,20 @@ while (w == 0 && b == 0) {
                         printf("invalid move try again");
                         continue;
                     }
-                    char prom=check_promotion(board[y1][x1],y2);
-                    addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom,whitekingpos,blackkingpos);
-                    if(board[y1][x1]=='k'){
-                        moving(&moves[n],board,dead);
-                        whitekingpos[0]=x2;
-                        whitekingpos[1]=y2;
+             char prom = check_promotion(board[y1][x1], y2);
 
-                    }
-                    else moving(&moves[n],board,dead);
-                    n++;
+              addmove(x1,y1, board[y1][x1], x2,y2, board[y2][x2], n, prom, whitekingpos, blackkingpos);
+              moving(&moves[n], board, dead);          // use the SAME n slot you just filled
+
+                // update king position if king moved
+                if (tolower(moves[n].p1) == 'k') {
+                if (islower(moves[n].p1)) { whitekingpos[0]=x2; whitekingpos[1]=y2; }
+                 else                      { blackkingpos[0]=x2; blackkingpos[1]=y2; }
+            }
+
+                n++;
+               max_history = n;                          // history length = next free index
+
                     
 
                 }
@@ -155,18 +166,21 @@ while (w == 0 && b == 0) {
                         printf("invalid move try again");
                         continue;
                     }
-                    char prom=check_promotion(board[y1][x1],y2);
-                    addmove(x1,y1,board[y1][x1],x2,y2,board[y2][x2],n,prom,whitekingpos,blackkingpos);
-                    if(board[y1][x1]=='K'){
-                        moving(&moves[n],board,dead);
-                        blackkingpos[0]=x2;
-                        blackkingpos[1]=y2;
+                     char prom = check_promotion(board[y1][x1], y2);
 
-                    }
-                    else moving(&moves[n],board,dead);
-                    n++;
+                      addmove(x1,y1, board[y1][x1], x2,y2, board[y2][x2], n, prom, whitekingpos, blackkingpos);
+                     moving(&moves[n], board, dead);          // use the SAME n slot you just filled
 
+                     // update king position if king moved
+                      if (tolower(moves[n].p1) == 'k') {
+                      if (islower(moves[n].p1)) { whitekingpos[0]=x2; whitekingpos[1]=y2; }
+                      else                      { blackkingpos[0]=x2; blackkingpos[1]=y2; }
                 }
+
+                     n++;
+                    max_history = n; 
+
+                 }
             if(n%2==0)
             boardprintWH(board);
             else boardprintBL(board);

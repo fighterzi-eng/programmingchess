@@ -69,14 +69,32 @@ void redo(char **board, move m, int whitekingpos[2], int blackkingpos[2], char *
     deadn++;
     dead[deadn] = m.p2;
 }
+
+    // BETTER FIX: Manually kill flags if King/Rook moves
+    if (tolower(m.p1) == 'k') {
+        if (islower(m.p1)) { wk_castle_ks = false; wk_castle_qs = false; }
+        else               { bk_castle_ks = false; bk_castle_qs = false; }
+    }
+    else if (tolower(m.p1) == 'r') {
+        // Logic to kill specific side castling if rook moves
+        if (islower(m.p1) && m.y1 == 8 && m.x1 == 1) wk_castle_qs = false;
+        if (islower(m.p1) && m.y1 == 8 && m.x1 == 8) wk_castle_ks = false;
+        if (isupper(m.p1) && m.y1 == 1 && m.x1 == 1) bk_castle_qs = false;
+        if (isupper(m.p1) && m.y1 == 1 && m.x1 == 8) bk_castle_ks = false;
+    }
+
+
     // Kingpos update...
-    if (isupper(m.p1)) { // Black piece
+    // Only update King pointers if the piece moved was actually a King
+if (tolower(m.p1) == 'k') { 
+    if (isupper(m.p1)) { // Black King
         blackkingpos[0] = m.x2;
         blackkingpos[1] = m.y2;
-    } else { // White piece
+    } else { // White King
         whitekingpos[0] = m.x2;
         whitekingpos[1] = m.y2;
     }
+}
 }
 
 void addmove(int x1, int y1, char p1, int x2, int y2, char p2, int n, char promotion, int *wk, int *bk) {
