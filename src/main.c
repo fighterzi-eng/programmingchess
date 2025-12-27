@@ -8,6 +8,7 @@ bool wk_castle_ks = true, wk_castle_qs = true;
 bool bk_castle_ks = true, bk_castle_qs = true;//castle rights
 bool use_fancy_graphics = true;
 int max_history = 0;
+int M50moveCounter = 0; //for fifty move rule **new
 int main() {
     int n = 0;
     char dead[32];
@@ -145,7 +146,7 @@ while (w == 0 && b == 0) {
              char prom = check_promotion(board[y1][x1], y2);
 
               addmove(x1,y1, board[y1][x1], x2,y2, board[y2][x2], n, prom, whitekingpos, blackkingpos);
-              moving(&moves[n], board, dead);          // use the SAME n slot you just filled
+              moving(&moves[n], board, dead);          
 
                 // update king position if king moved
                 if (tolower(moves[n].p1) == 'k') {
@@ -154,9 +155,7 @@ while (w == 0 && b == 0) {
             }
 
                 n++;
-               max_history = n;                          // history length = next free index
-
-                    
+               max_history = n;                          
 
                 }
                 else if(n%2==1){
@@ -169,7 +168,7 @@ while (w == 0 && b == 0) {
                      char prom = check_promotion(board[y1][x1], y2);
 
                       addmove(x1,y1, board[y1][x1], x2,y2, board[y2][x2], n, prom, whitekingpos, blackkingpos);
-                     moving(&moves[n], board, dead);          // use the SAME n slot you just filled
+                     moving(&moves[n], board, dead);         
 
                      // update king position if king moved
                       if (tolower(moves[n].p1) == 'k') {
@@ -187,6 +186,20 @@ while (w == 0 && b == 0) {
                 print_dead(dead);  
                 w=endgamecheck(whitekingpos,board);
                 b=endgamecheck(blackkingpos,board);
+
+             if (tolower(moves[n-1].p1) == 'p' || (moves[n-1].p2 != '.' && moves[n-1].p2 != '-')) {
+                M50moveCounter = 0;
+                } 
+                else {
+                M50moveCounter++;
+                  }
+                  if(M50moveCounter>=100)//50 move rule counted twice per full move
+                  {
+                printf("\nFifty-move rule activated. The game is a draw.\n");
+                printf("Made by: John Bassem and Justin Jimmy \n");
+                printf("Thank you for playing!\n");
+                return 0;
+            }
 
     }
     if(w==2||b==2) printf("Stalemate The game is a draw");
