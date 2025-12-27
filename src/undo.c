@@ -1,20 +1,48 @@
 #include"include/undo.h"
-#include"include/utility.h"
-#include "include/rules.h"
-/*typedef struct 
-{
-    int x1;
-    int y1;
-    char p1;
-    int x2;
-    int y2;
-    char p2;
-
-    
-}move;*/ //we already have this in the header file cant define it twice
 
 move moves[1024];
-// Fixed Undo to restore flags
+void printMoveHistoryRaw(move *moves, int total_moves) {
+    if (total_moves <= 0) {
+        printf("No moves in history.\n");
+        return;
+    }
+
+    printf("\n======= RAW MOVE HISTORY =======\n");
+
+    for (int i = 0; i < total_moves; i++) {
+        move *m = &moves[i];
+
+        printf("Move %d:\n", i + 1);
+        printf("  From: (%d, %d)\n", m->x1, m->y1);
+        printf("  To  : (%d, %d)\n", m->x2, m->y2);
+        printf("  p1  : '%c'\n", m->p1 ? m->p1 : '.');
+        printf("  p2  : '%c'\n", m->p2 ? m->p2 : '.');
+        printf("  promo: '%c'\n", m->promotion ? m->promotion : '.');
+
+        printf("  Castling: rook_x1=%d rook_x2=%d rook_piece='%c'\n",
+               m->rook_x1, m->rook_x2,
+               m->r_p1 ? m->r_p1 : '.');
+
+        printf("  EnPassant captured: '%c'\n",
+               m->ep_captured_p ? m->ep_captured_p : '.');
+
+        printf("  King before move: WK(%d,%d) BK(%d,%d)\n",
+               m->wkx_before, m->wky_before,
+               m->bkx_before, m->bky_before);
+
+        printf("  Castling rights before: WK(%d,%d) BK(%d,%d)\n",
+               m->wk_ks, m->wk_qs, m->bk_ks, m->bk_qs);
+
+        printf("  EP target before: (%d,%d)\n",
+               m->ep_tx, m->ep_ty);
+
+        printf("  Turn index stored: %d\n", m->n);
+
+        printf("--------------------------------\n");
+    }
+
+    printf("================================\n");
+}
 void undo(char **board, move m, int *whitekingpos, int *blackkingpos, char *dead) {
     // 1. Restore Pieces
     board[m.y1][m.x1] = m.p1;
@@ -117,34 +145,3 @@ void addmove(int x1, int y1, char p1, int x2, int y2, char p2, int n, char promo
     moves[n].ep_captured_p = '\0';
     moves[n].n = n;
 }
-//n is the same as the number of turns and its taken by reference to avoid logical errors when redoing again
-/*void rumode(char **board,int *n){
-    int start=*n;
-    char op='/';
-    while(op!='e'){ //i think we should not read input in here input should be handled in main
-        scanf(" %c",&op);//space before %c to ignore whitespace characters
-        switch (op)
-        {
-        case 'u' :
-            if (*n==0) continue;
-            undo(board,moves[*n-1]);//index was off by one i fixed it
-            *n--;
-            break;
-        case 'r' :
-             if (*n==start) continue;
-            redo(board,moves[*n]);  //you seemed to forget that arrays start from 0 moves[0] is the first move so i fixed it
-            *n++;
-            break;
-        
-        default:
-            printf("invalid input");
-            continue;
-            break;
-        }
-        boardprint(board);
-
-    }
-    //no need to clear the array bec it will do this by its own bec the n of the turns is decreased
-
-}
-*/

@@ -1,8 +1,5 @@
 #include"include/utility.h"
-#include"include/undo.h"
-#include <stdbool.h>
-#include <stdio.h>  
-#include <string.h>
+
 extern bool use_fancy_graphics;
 extern bool wk_castle_ks, wk_castle_qs, bk_castle_ks, bk_castle_qs;
 //new
@@ -232,17 +229,3 @@ void updateKingPositions(char** board, int* whitekingpos, int* blackkingpos) {
 
 
 
-//this is a basic way of checking danger and it will work but its not efficent
-//i can make it more efficent if i can track each piece
-//return 1 if danger,0 if safe
-/*int incheck(int x,int y,char**board){ Danger Checker V1
-  for(int i=1;i<9;i++){
-    for(int j=1;j<9;j++){
-      if((board[i][j]=='-'||board[i][j]=='.')) continue;
-      if(isupper(board[y][x])==isupper(board[i][j])) continue;
-      if (movevalidator(i,j,x,y,board)==0) return 1;
-    }
-
-  }
-  return 0;
-}*/ 

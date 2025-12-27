@@ -38,6 +38,7 @@ printf("               Start               \n");
 printf("               Load                \n");
 printf("               Exit                \n");
 printf("----------------------------------\n");
+memset(moves, 0, sizeof(moves));
     fgets(input, sizeof(input), stdin);
     input[strcspn(input, "\n")] = 0; // Remove newline
     if (strcmp(input, "exit") == 0||strcmp(input, "Exit") == 0) {
@@ -46,7 +47,7 @@ printf("----------------------------------\n");
         return 0;
     }
     if (strcmp(input, "load") == 0||strcmp(input, "Load") == 0) {
-       load_game_bin(board, &n, whitekingpos, blackkingpos, dead);
+       load_game_bin(board, &n, whitekingpos, blackkingpos, dead,&ep_target_x,&ep_target_y,&wk_castle_ks,&wk_castle_ks,&bk_castle_ks,&bk_castle_qs,moves);
 
         if(n%2==0)
             boardprintWH(board);
@@ -60,7 +61,7 @@ printf("----------------------------------\n");
     updateKingPositions(board, whitekingpos, blackkingpos);
     boardprintWH(board);
 
-    memset(moves, 0, sizeof(moves));
+    
 
     int w = 0, b = 0;
       printf("\nEnter your move in format ex: (e2e4):\n");
@@ -90,14 +91,14 @@ while (w == 0 && b == 0) {
     }
     // 1. CHECK COMMANDS FIRST before saving "before" positions
     if (strcmp(input, "save") == 0||strcmp(input, "Save") == 0) {
-        save_game_bin(n, dead);
+        save_game_bin(&n, dead,moves);
         while (getchar() != '\n'){
 
         }; // CLEAR THE SCANF BUFFER
         continue;
     } 
     else if (strcmp(input, "load") == 0||strcmp(input, "Load") == 0) {
-        load_game_bin(board, &n, whitekingpos, blackkingpos, dead);
+        load_game_bin(board, &n, whitekingpos, blackkingpos, dead,&ep_target_x,&ep_target_y,&wk_castle_ks,&wk_castle_ks,&bk_castle_ks,&bk_castle_qs,moves);
         while (getchar() != '\n'){
 
         }; // CLEAR THE SCANF BUFFER
@@ -118,9 +119,9 @@ while (w == 0 && b == 0) {
             continue;
         }
         if (strcmp(input, "redo") == 0) {
-             if (n >= max_history) {
+             if (n == max_history) {
              printf("Nothing to redo!\n");
-              continue;
+              
              }
             redo(board, moves[n], whitekingpos, blackkingpos, dead);
             n++;
